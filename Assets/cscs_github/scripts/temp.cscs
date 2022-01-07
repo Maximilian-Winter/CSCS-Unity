@@ -1,0 +1,264 @@
+
+clear_comp_definitions();
+clear_comp_namespaces();
+add_comp_namespace("System.Diagnostics");
+add_comp_definition("int m_counter;");
+
+csfunction double cstest(int arg) {
+  Stopwatch stopWatch = new Stopwatch();
+  stopWatch.Start();
+  Thread.Sleep(1000);
+  stopWatch.Stop();
+  TimeSpan ts = stopWatch.Elapsed;
+  if (arg < 10 && ts.Seconds < 30) Console.WriteLine("small");
+  else Console.WriteLine("bigger");
+
+  m_counter++;
+  string elapsedTime = String.Format("{0:00}:{1:00}:{2:00}.{3:00}",
+      ts.Hours, ts.Minutes, ts.Seconds,
+      ts.Milliseconds / 10);
+  Console.WriteLine("Counter: " + m_counter, ", arg: " + arg + ", elapsedTime=" + elapsedTime);
+  return ts;
+}
+x = cstest(1);
+
+
+csfunction int cscode(sender, int arg) {
+  var x = sender;
+  int a = 1;
+  int b = arg;
+  int c = a + b;
+  Console.WriteLine(sender + ", c=" + c);
+  return c;
+}
+cfunction cscscode(sender, arg) {
+  x = sender;
+  print(sender);
+  return arg + 1;
+}
+res=cscode ("lala", 7);
+res=cscscode ("lala", 7);
+print(res);
+
+labStr="labelString1";
+b = {"Key1":labStr, "Key2":"label2"};
+print(b["key1"], b["key2"]);
+
+startDebugger();
+while(true) { sleep(1000000); };
+
+cycles = 1000; i = 0;
+start = pstime();
+while ( i++ < cycles) {
+    str = " la la ";
+    str = StrTrim(str);
+    str = StrReplace(str, "la", "lu");
+    if (str != "lu lu") {    
+      throw "Wrong result: [" + str + "] instead of [lu lu]";
+    }
+}
+end = pstime();
+print("Total CPU time of", cycles, "loops:", end-start, "ms.");
+
+c = {"aa", "bb", "xxx"};
+for (i=0; i < c.size; i++) {
+  print(i, c[i]);
+}
+
+n = 10;
+print(n.type);
+print(n.size);
+print(n.properties);
+props=n.properties;
+for (i=0; i < props.size; i++) {
+  print(i, props[i]);
+}
+
+class Stuff1 {
+  x = 2;
+  Stuff1(a) {
+    x = a;
+  }
+ 
+  function addStuff1(n) {
+    return n + x;
+  }
+}
+
+class Stuff2 {
+  y = 3;
+  Stuff2(b) {
+    y = b;
+  }
+ 
+  function addStuff2(n) {
+    return n + y;
+  }
+}
+
+class CoolStuff : Stuff1, Stuff2 {
+  z = 3;
+  CoolStuff(a, b, c) {
+    x = a;
+    y = b;
+    z = c;
+  }
+ 
+  function addCoolStuff() {
+    return x + y + z;
+  }
+}
+
+addition = 100;
+obj1 = new Stuff1(10);
+print("х=", obj1.x, " addStuff1=", obj1.addStuff1(addition));
+
+obj2 = new Stuff2(20);
+print("y=", obj2.y, " addStuff2=", obj2.addStuff2(addition));
+
+newObj = new CoolStuff(11, 13, 17);
+print("х=", newObj.x, " y=", newObj.y, " z=", newObj.z, " addCoolStuff=", newObj.addCoolStuff());
+print("newObj.addStuff1=", newObj.addStuff1(addition), " newObj.addStuff2=", newObj.addStuff2(addition));
+/*
+myText = CreateText( "khm" );
+myText.visible = true;
+myText.name = "kiborg";
+myText.color = "blue";
+props = GetPropertyStrings(myText);
+myText.color(1);
+
+print("props: ", props);
+print("name: ", myText.name);
+print("type: ", myText.type);
+print("text: ", myText.text);
+print("color: ", myText.color);
+print("visible: ", myText.visible);
+
+
+c.name  = "My Cube"; 
+c.value = 10;
+c.index = 6;
+
+SetProperty(c, "newOne", 40);
+SetProperty(c, "value", 11);
+props = GetProperties(c);
+print("props: ", props);
+print("name: ", c.name);
+print("value: ", c.value);
+print("index: ", c.index);
+print("newOne: ", c.newOne);
+print("newOne: ", GetProperty(c, "newOne"));
+print("name: ", GetProperty(c, "name"));
+print(c.nameX);
+
+function getP(n) {
+  bound = n;//round(sqrt(n));
+  i = 0;
+  while (++i < bound) {
+    if (isPrime(i)) {
+      print(i);
+    }
+  }
+}
+n=34;
+getP(n);
+
+for (i = 10; i >= 0; i--) {
+  write(i, " ");
+  arr[i] = 2*i;
+}
+i = 10;
+print;
+for (;;) {
+
+  write(i, " ");  arr[i] = 2*i;
+  i--;
+  if (i < 0) { break; }
+}
+print;
+for (item : arr) {
+  write(item, " ");
+}
+print;*/
+//--a;
+
+
+/*function factorial(n) {
+  if (!isInteger(n) || n < 0) {
+    exc = "Factorial is for nonnegative integers only (n="+ n +")";
+    throw exc;
+  }
+  if (n <= 1) {
+    return 1;
+  }
+
+  return n * factorial(n - 1);
+}
+function isInteger(candidate) {
+  return candidate == round(candidate);
+}
+
+function factorialHelper(n) {
+  try {
+    f = factorial(n);
+    print("factorial(", n, ")=", f);
+  } catch(exc) {
+    print("Caught exception: ", exc);
+  }
+}
+
+factorialHelper(0);
+factorialHelper(10);
+factorialHelper("blah");*/
+
+
+//print("Thanks, we played ", round, " round(s).");
+
+
+//include("scripts/functions.cscs");
+//show factorial;
+//arr[0]=0;
+//if (arr[0] == 0) { printgreen("Hello, World!"); }
+//n=20;
+//b=isInteger(9.5);
+//a = fibonacci(n);
+//a = factorial(n);
+//print("fibonacci(", n, ")=[", a, "]");
+
+//translate ru test;
+/*
+odd  = {};
+even = {};
+c = 0;
+while (c++ < 10) {
+  if (c % 2 == 1) {
+    odd[size(odd)] = c;
+  } else {
+    even[size(even)] = c;
+  }
+}
+
+for (i : odd) {
+  print("odd number: ", i);
+}
+function factorial(n) {
+  if (n < 0) {
+    exc = "Negative number (n="+ n +") for factorial";
+    throw (exc);
+  }
+  if (n <= 1) {
+    return 1;
+  }
+
+  return n * factorial(n - 1);
+}
+
+try {
+  number = -6;
+  print("Factorial(", number, ")=", factorial(number));
+} catch (problem) {
+  print(problem);
+}
+number = 6;
+print("Factorial(", number, ")=", factorial(number));
+*/

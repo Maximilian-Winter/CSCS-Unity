@@ -1,0 +1,110 @@
+﻿using System;
+using System.Reflection;
+using UnityEngine;
+
+namespace CSCS
+{
+    public class PropertyClass
+    {
+        private string Property42;
+        
+        public string Property1
+        {
+            get { return Property42; }
+        }
+
+        public String Property2
+        {
+            get { return "hello"; }
+        }
+
+        protected String Property3
+        {
+            get { return "hello"; }
+        }
+
+        private int Property4
+        {
+            get { return 32; }
+        }
+
+        internal String Property5
+        {
+            get { return "value"; }
+        }
+
+        protected internal String Property6
+        {
+            get { return "value"; }
+        }
+        
+        private void Start()
+        {
+        }
+        
+        private void Update()
+        {
+        }
+        
+        private string OnDestroy(string val)
+        {
+            return val;
+        }
+    }
+    public class CodeGenerator : MonoBehaviour
+    {
+        public static string GenerateCode(Type classToGenerateCodeFrom)
+        {
+           
+            string generatedCode = "";
+            // Get the public properties, fields and methods.
+            PropertyInfo[] publicProperties =
+                classToGenerateCodeFrom.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            
+            MethodInfo[] publicMethods = classToGenerateCodeFrom.GetMethods(BindingFlags.Public | BindingFlags.Instance);
+            
+            // Get the private properties and methods.
+            /*PropertyInfo[] privateProperties =
+                classToGenerateCodeFrom.GetProperties(BindingFlags.NonPublic | BindingFlags.Instance);
+
+            MethodInfo[] privateMethods = classToGenerateCodeFrom.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance);*/
+            
+            foreach (PropertyInfo p in publicProperties)
+            {
+                Debug.Log("PublicProperty: " + p.Name + " Type: " + p.PropertyType.Name);
+            }
+            
+            foreach (MethodInfo p in publicMethods)
+            {
+                Debug.Log("PublicMethod: " + p.Name + " ReturnType: " + p.ReturnType.Name);
+                ParameterInfo[] parameters = p.GetParameters();
+                foreach (ParameterInfo para in parameters)
+                {
+                    Debug.Log("Method: " + p.Name + " ArgumentName: " + para.Name + " ArgumentPosition: " + para.Position+ " ArgumentType: " + para.ParameterType.Name);
+                }
+            }
+            /*
+            foreach (PropertyInfo p in privateProperties)
+            {
+                Debug.Log("PrivateProperty: " +  p.Name + " Type: " + p.PropertyType.Name);
+            }
+            
+            foreach (MethodInfo p in privateMethods)
+            {
+                Debug.Log("PrivateMethod: " + p.Name + " ReturnType: " + p.ReturnType.Name);
+                ParameterInfo[] parameters = p.GetParameters();
+                foreach (ParameterInfo para in parameters)
+                {
+                    Debug.Log("Method: " + p.Name + " ArgumentName: " + para.Name + " ArgumentPosition: " + para.Position+ " ArgumentType: " + para.ParameterType.Name);
+                }
+            }*/
+            return generatedCode;
+        }
+
+        [ContextMenu("GenerateCode")]
+        public void StartCodeGeneration()
+        {
+            GenerateCode(typeof(PropertyClass));
+        }
+    }
+}

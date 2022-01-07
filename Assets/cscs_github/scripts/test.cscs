@@ -1,0 +1,1402 @@
+
+now = now("yyyy/MM/dd HH:mm:ss.fff");
+Print("Starting tests.", now);
+ResetVariables();
+
+Start = pstime;
+include("functions.cscs");
+Print("Testing LoaderMain:", LoaderMain);
+Test(LoaderMain, true);
+
+Print("Testing Math");
+Test(Math.Floor(Math.Pi), Math.Ceil(Math.E));
+Test(Math.Pow(Math.Sqrt2, 2), 2);
+Test(Math.Pow(Math.Cbrt(10), 3), 10);
+Test(Math.Pow(Math.Sin(Math.Pi), 2) + Math.Pow(Math.Cos(Math.Pi), 2), 1);
+Test(Math.Round(Math.Atanh(0.2), 3), 0.203);
+Test(Math.Random() - 1 < 0, true);
+Test(Math.Log(Math.Exp(7)), 7);
+Test(Math.Exp(Math.Log(6)), 6);
+Test(Math.Max(10,5,12,13,9), 13);
+Test(Math.Min(10,5,12,13,9), 5);
+
+Print("Testing strings");
+Test(1 + " " + 2, "1 2");
+
+txt = "lu";
+txt += txt;
+txt = txt + "_";
+txt += "la";
+txt += 1;
+Test(txt, "lulu_la1");
+
+txt = "lu";
+txt += txt + Substring(txt, 0, 1) + "_" + 1;
+Test(txt, "lulul_1");
+
+bb = "abc_blah_!123";
+c = Substring(bb, 4, 3);
+Test(c, "bla");
+ind = StrIndexOf(bb, "bla");
+Test(ind, 4);
+
+upper = StrUpper(bb);
+Test(upper, "ABC_BLAH_!123");
+lower = StrLower(upper);
+Test(lower, "abc_blah_!123");
+
+Print("Testing numbers");
+a=(-3+2*9)-(10-15);
+a++; --a;
+Print("a=[", a, "]");
+Test(a, 20);
+
+x = 1;
+b = x++ - x--; // b = -1, x = 1
+Test(x, 1);
+Test(b, -1);
+c = x = (b += 1); // x = b = c = 0,
+Test(x, 0);
+Test(b, 0);
+Test(c, 0);
+x -= ++c; // c = 1, x = -1
+Test(x, -1);
+Test(c, 1);
+
+c++;
+Test(c == 2 && ++c % 3 == 0, true);
+Test(c == 2 || --c % 3 == 0, false);
+
+c = 2;
+Test(Math.Sqrt(((++c)**3 - 3**2 - 2**3)**2), 10);
+
+Test(2-11-3*7, -30);
+Test((((-5.5))), -5.5);
+Test(((16-3)-3)+15/2*5, 47.5);
+Test(1-2-3-(4-(5-(6-7)))-Math.pow(2,3*Math.exp(14-7*2)), -10);
+Test(3*50-3*Math.pow(2,4)*3, 6);
+Test(++a-a--, 0);
+Test((a++)-(--a), 0);
+Test(a, 20);
+Test(1-a--, -19);
+Test((a++)-(--a)-a--, -19);
+Test(a, 18);
+Test(Math.sin(Math.pi/2), 1);
+Test(Math.cos(Math.pi/2), 0);
+//Test(Math.tan(Math.pi/2), 1.63312393531954E+16);
+
+a = 19;
+Test((a++)-(--a)-a--, a - 2 * a - 1);
+Test((a++)-(--a)-a--, a - 2 * a - 1);
+
+x = 2.0E+15 + 3e+15 - 1.0e15;
+Test(x, 4e+15);
+
+Print;
+
+a = 10;
+d = (c=a++) + 1;
+Test(c, 10);
+Test(d, 11);
+d = c=a++ + 1;
+Test(c, 12);
+Test(d, 12);
+
+n = 10;
+getPrimes(n);
+Test(isPrime(5), 1);
+Test(isPrime(6), 0);
+function isInteger(candidate) {
+  return candidate == Math.round(candidate);
+}
+
+n="blah";
+if (!isInteger(n) || n < 0) {
+  Test(n, n);
+} else {
+  Test("integer", n);
+}
+
+c = 0; b = 2;
+c+=3;
+Test(c, 3);
+b*=5;
+Test(b/=2, 5);
+
+Print("Testing cases");
+heaDers["mEssage1"] = "Data1";
+heADErs["Message2"] = "Data2";
+keys = headers.Keys;
+Test(headers.Keys.Size, 2);
+Test(keys[0], "mEssage1");
+Test(keys[1], "Message2");
+Test(HeaDers["MESSaGe1"], "Data1");
+Test(HeaDers["messaGE2"], "Data2");
+
+Print("Testing factorial(5): ");
+Test(factorial(5), 120);
+
+a=1;
+c=0;
+Test(a||c, 1);
+Test(c&&b, 0);
+
+a[1]=1;
+a[2]=2;
+c=a[1]+a[2];
+Test(c, 3);
+
+a[1][2]=22;
+a[5][3]=15;
+a[1][2]-=100;
+a[5][3]+=100;
+
+Test(a[1][2], -78);
+Test(a[5][3], 115);
+
+Print(a[5][2]);
+
+i=13;
+i++;
+Print(i);
+a[1][2]++;
+Print(a[1][2]);
+Print(a[5][3]++);
+Print(a[5][3]++);
+Print(a[5][3]++);
+Test(a[5][3], 118);
+
+Print(++a[5][3]);
+Print(++a[5][3]);
+Print(++a[5][3]);
+Print(a[5][3]++);
+Test(a[5][3], 122);
+
+Print(--a[5][3]);
+Print(--a[5][3]);
+Print(--a[5][3]);
+Print(a[5][3]--);
+Print(a[5][3]--);
+Print(a[5][3]--);
+Test(a[5][3], 116);
+
+Test(a[5][3].type, "NUMBER");
+Test(a[5].size, 4);
+
+i=10;
+
+while(--i > 0) {
+  newarray[i] = 2*i;
+}
+Print("newarray.size=", newarray.size);
+Test(i, 0);
+Test(newarray[9], 18);
+Test(newarray.size, 10);
+
+Test(1 + " " + 2, "1 2");
+Test("" + 4 + 5, "45");
+
+Print("Testing triple equality");
+Test(4 !== "4", true);
+Test(4 === "4", false);
+Test(4 == "4", true);
+Test(4 !== "5", true);
+
+Print("Testing 'var' and global and local names");
+function testGlobalLocal() {
+    var globalNoChangesFromLocal = 11;
+    var localOnly = 17;
+    globalDefinedLocally = 18;
+    globalDefinedLocally++;
+    globalChangesInLocal = 12;
+    globalChangesInLocal--;
+    localOnly++;
+    globalNoChangesFromLocal = 15;
+    globalNoChangesFromLocal++;
+}
+globalNoChangesFromLocal = 2;
+globalChangesInLocal   = 3;
+testGlobalLocal();
+Test(globalNoChangesFromLocal, 2);
+Test(globalChangesInLocal, 11);
+Test(NameExists(localOnly), false);
+Test(NameExists(globalDefinedLocally), true);
+Test(globalDefinedLocally, 19);
+
+var xx = {"firstName":"John", "lastName":"Doe"}, yy = {"firstName":"John1", "lastName":"Doe1"}; 
+var x1 = {firstName:"Johnny", lastName:"Doe"}, y1 = {firstName:"John2", lastName:"Doe2"}; 
+Test(xx["firstName"], "John");
+Test(yy["lastName"], "Doe1");
+Test(x1["firstName"], "Johnny");
+Test(y1["lastName"], "Doe2");
+
+Print("Testing short circuit evaluation");
+function f(x) {
+  counter++;
+  return x;
+}
+counter = 0; 
+Test(f(0) && f(1), 0);
+Test(counter, 1);
+counter = 0; Test(f(1) && f(0), 0); Test(counter, 2);
+counter = 0; Test(f(1) || f(2), 1); Test(counter, 1);
+counter = 0; Test(f(0) || f(3), 1); Test(counter, 2);
+
+a = (f(1) && ((Math.sin(0) || Math.sin(1*2)) && f(2) && (f(3) || f(4))));
+Test(a, 1);
+
+Print("Testing arrays and maps");
+_arr[2] = 10; _arr[1] = "str";
+Test(_arr.type,    "ARRAY");
+Test(_arr[0].type, "NONE");
+Test(_arr[1].type, "STRING");
+Test(_arr[2].type, "NUMBER");
+
+num = 10;
+Test(num.type, "NUMBER");
+
+Test(VariableType.NONE.string.lower, "none");
+Test(VariableType.NUMBER.String.Upper, "NUMBER");
+Test(VariableType.NONE, 0);
+
+x["bla"]["blu"]=113;
+Test(contains (x["bla"], "blu"), 1);
+Test(contains (x["bla"], "bla"), 0);
+x["blabla"]["blablu"]=125;
+Test(--x["bla"]["blu"] + x["blabla"]["blablu"]--, 237);
+
+b[5][3][5][3]=15;
+Print(++b[5][3][5][3]);
+Print(++b[5][3][5][1]); // NaN expected here
+b[5][3][5][3]*=1000;
+Test(b[5][3][5][3], 16000);
+Test(size(b), 6);
+Test(size(b[5]), 4);
+Test(size(b[5][3]), 6);
+Test(size(b[5][3][5]), 4);
+Test(size(b[5][3][5][3]), 0);
+Test(b[5][3][5][3].length, 5);
+
+bla="bla";
+x["bla"]=13;
+x["blabla"]=26;
+Test(x["bla"], 13);
+Test(size(x), 2);
+Test(contains(x, "bla") , 1);
+Test(contains(x, "bla2"), 0);
+Test(x["bla"] + x["blabla"], 39);
+
+x["bla"]["blu"]=113;
+Test(contains(x["bla"], "blu"), 1);
+Test(contains(x["bla"], "bla"), 0);
+x["bla"]["blu"]++;
+Test(x["bla"]["blu"], 114);
+x["blabla"]["blablu"]=126;
+--x["blabla"]["blablu"];
+Test(x["blabla"]["blablu"], 125);
+
+Test(--x["bla"]["blu"] + x["blabla"]["blablu"]--, 238);
+Print(--x["blabla"]["blablu"]);
+Print(--x["blabla"]["blablu"]);
+Print(--x["blabla"]["blablu"]);
+Print(x["blabla"]["blablu"]++);
+Print(x["blabla"]["blablu"]++);
+Print(x["blabla"]["blablu"]++);
+
+rem["param1"] = 1;
+rem["param2"] = 2;
+Test(rem.size, 2);
+rem.remove("param1");
+Test(rem.size, 1);
+Test(rem["param2"], 2);
+rem.remove("param2");
+Test(rem.size, 0);
+
+rem = { "item1", "item1", "item2", "item2"};
+rem.Add("item0", 0);
+Test(rem[0], "item0");
+Test(rem.size, 5);
+rem.remove("item1");
+rem.remove("item0");
+Test(rem.size, 2);
+Test(rem[0], "item2");
+rem.removeAt(0);
+Test(rem.size, 1);
+Test(rem[0].length, 5);
+rem.removeAt(0);
+Test(rem.size, 0);
+
+x = 20 * Math.sin(Math.pow(Math.pi,2));
+cache["if"] = -10 * x;
+cache["else"] = 10 * x;
+if (x < 0 && (Math.log(x + 3*Math.pow(10,2)) < 6*Math.exp(x) || x < 1 - Math.pi)) {
+  Print("OK, in if, x=", x, ", cache=", cache["if"]);
+} else {
+  Print("ERROR, in else, cache=", cache["else"]);
+}
+
+a={0};
+i = 0;
+while(++i < 10) {
+  add(a, 2*i);
+}
+Print (a);
+i -= 5;
+d=a[--i];
+Test(d, 8);
+Test(i, 4);
+
+n=1.5;
+exceptionThrown = false;
+try {
+  c = catalan(n);
+  Print("catalan(", n, ")=", c);
+  Print("ERROR. Exception needed for n=", n);
+} catch(exc) {
+  Print("OK. Caught: " + exc);
+  exceptionThrown = true;
+}
+Test(exceptionThrown, true);
+
+n=-10;
+exceptionThrown = false;
+try {
+  c = catalan(n);
+  Print("catalan(", n, ")=", c);
+  Print("ERROR. Exception needed for n=", n);
+} catch(exc) {
+  Print("OK. Caught: " + exc);
+  exceptionThrown = true;
+}
+Test(exceptionThrown, true);
+
+n=10;
+exceptionThrown = false;
+try {
+  c = catalan(n);
+  Print("catalan(", n, ")=", c);
+} catch(exc) {
+  Print("ERROR. Caught: " + exc);
+  exceptionThrown = true;
+}
+Test(exceptionThrown, false);
+
+exceptionThrown = false;
+try {
+  vari = blah.unknown;
+  Print("ERROR. Exception needed for non existing variable.");
+} catch(exc) {
+  Print("OK. Caught: " + exc);
+  exceptionThrown = true;
+}
+Test(exceptionThrown, true);
+
+f = fibonacci(n);
+Print("fibonacci(", n, ")=", f);
+Test(f, 55);
+c = catalan(n);
+Print("catalan(", n, ")=", c);
+Test(c, 16796);
+
+i = 0; b = 0;
+while(i < 13)
+{
+  b += (i*4 - 1);
+  i++;
+  if ( i >= 4) {
+    Print("in if, i==", i, ", break");
+    break;
+  } else {
+    Print("in else, i==", i, ", continue");
+    continue;
+  }
+  Print("this is never reached");
+}
+Print("while() done");
+
+n = 0; y = 1;
+a =  !!!n && !!y;
+Test(a, 1);
+b =  !a || !y || n;
+Test(b, 0);
+c =  !!(!y || !n && y);
+Test(c, 1);
+
+a = 1+(25-2*3);
+arr = {++a-a--, ++a*Math.exp(0)/a--, -2*(--a-(++a)), ++a/(a/3), 2 * Math.sqrt(Math.pow(2, 2))};
+Print(arr);
+i = 0;
+while(i < size(arr)) {
+  Print("arr[", i, "]=", arr[i], ", expecting ", i);
+  i++;
+}
+
+if (2*Math.pow(2,4) > Math.pow(2,5)*2 || factorial(3) == 24) {
+  Print("if not expected");
+} elif(Math.exp(3) <= (3*(Math.pow(2,3)+1)-(1-Math.sin(Math.pi))) && factorial(4) == 24) {
+  Print(Math.exp(3), "<=", (3*(Math.pow(2,3)+1)-(1-Math.sin(Math.pi))), " expected");
+} else {
+  Print("else not expected");
+}
+
+b = "bla";
+i = 0;
+while(i < 13)
+{
+  b += (i*4 - 1);
+  i++;
+  if ( i == 3) {
+    break;
+  } else {
+    continue;
+  }
+  Print("this is never reached");
+  Test(true, false);
+}
+Test(b, "bla-137");
+
+Print("who are \"you\" my friend?"," e=", 0+Math.exp(1)-2*Math.sin(0), ", pi=", Math.pi);
+
+a = 23; b = 22;
+cond = "na";
+if (a < b) {
+  if (b < 15) {
+    cond = "cond1";
+  }
+  elif  (b < 50) {
+    cond = "cond2";
+  }
+}
+elif (a >= 25) {
+  cond = "cond3";
+}
+else {
+  cond = "cond4";
+}
+Test(cond, "cond4");
+Print();
+
+a=1;
+b=2;
+c=0;
+Test(a&&c, 0);
+Test(a||c, 1);
+Test(a||b, 1);
+Test(!a&&!b, 0);
+Test(!a && !c, 0);
+Test(! a || !c, 1);
+Test(!a || !b, 0);
+Test(a && b && !c, 1);
+Test(a || b ||  c, 1);
+Test(!a || !b || c, 0);
+
+i = 10;
+while(--i > 0) {
+  newarray[i] = 2*i;
+}
+Print("size(newarray)=", size(newarray));
+Test(i, 0);
+Test(newarray[9], 18);
+Test(size(newarray), 10);
+
+function trySuite(n) {
+  Print("Trying to calculate negative factorial...");
+  result = tryNegative(n);
+  return result;
+}
+
+function tryNegative(n) {
+  return factorial(-1 * n);
+}
+function tryNonInteger(n) {
+  Print ("In try non-integer");
+  return factorial(n + 0.5);
+}
+function tryZeroDivision() {
+  return cot(0);
+}
+
+function variableTest() {
+  Print("In function start, n=", n);
+  n = Math.sqrt((32*8*4 - 10*(3+7) + 19*4) * 10) / 5;
+  Test(n, 20);
+  Print("In function end, n=", n);
+}
+
+function convertToNegative(n) {
+  return -1 * n;
+}
+n = 5;
+try {
+  f = trySuite(n);
+  Print("factorial(", n, ")=", f);
+}
+catch(exc) {
+  Print ("Caught Exception: ", exc);
+}
+
+try {
+  f = tryNonInteger(n);
+  Print("factorial(", n, ")=", f);
+}
+catch(exc) {
+  Print ("Caught Exception: ", exc);
+}
+
+try {
+  Print ("In try zero division ");
+  f = tryZeroDivision();
+  Print("cot(0)=", f);
+}
+catch(exc) {
+  Print ("Caught Exception: ", exc);
+}
+
+Print("After try-catches");
+
+n *= 2;
+f=factorial(n);
+Print("factorial(", n, ")=", f);
+
+variableTest();
+Print("After function, n=", n);
+
+for (i = 10; i >= 0; i--) {
+  Print(i, " ");
+  arr[i] = 2*i;
+}
+i = 10;
+Print;
+for (;;) {
+  Print(i, " ");  arr[i] = 2*i;
+  i--;
+  if (i < 0) { break; }
+}
+Print;
+for (item : arr) {
+  Print(item, " ");
+}
+Print;
+Test("x","x");
+
+str="Test str";
+counter = 0;
+for (ch : str) {
+  Test(ch, str.at(counter));
+  counter++;
+}
+Test(counter, str.Length);
+
+Test1 = {0,3,5};
+Test1[1][2]=3;
+
+if(Test1[1][2] == 3) { result="equal";}
+else { result="not equal"; }
+Test(result, "equal");
+
+if(Test1[1] == 5) { result="equal";}
+else { result="not equal"; }
+Test(result, "not equal");
+
+if(3 == Test1[2]) { result="equal";}
+else { result="not equal"; }
+Test(result, "not equal");
+
+if(5 == Test1[2]) { result="equal";}
+else { result="not equal"; }
+Test(result, "equal");
+
+ab=2;
+if(ab == 2) { result="equal";}
+else { result="not equal"; }
+Test(result, "equal");
+
+if(2 != ab) { result="equal";}
+else { result="not equal"; }
+Test(result, "not equal");
+
+if (Math.sin(10) > -1) { result = "sinTestOK"; }
+else { result = "sinTestNotOK";  }
+Test(result, "sinTestOK");
+
+objName = "Columns";
+if (StrIndexOf(objName,"Columns") > -1) { result = "indexofOK"; }
+else { result = "indexofNotOK";  }
+Test(result, "indexofOK");
+
+objName = "abcColumnsXX";
+result = StrIndexOf(objName,"Columns");
+Test(result, 3);
+
+Test1 = {1,0};
+Test2 = {0,1};
+if (Test1 != Test2) { result = "not equal";}
+else {  result = "equal"; }
+Test(result, "not equal");
+
+Test2 = {1,0};
+if (Test1 != Test2) { result = "not equal";}
+else {  result = "equal"; }
+Test(result, "equal");
+
+if (1==2 || 2==2) { result = "true"; }
+else { result = "false"; }
+Test(result, "true");
+
+if (2==2 || 1==2) { result = "true"; }
+else { result = "false"; }
+Test(result, "true");
+
+if (1==2 && 2==2) { result = "true"; }
+else { result = "false"; }
+Test(result, "false");
+
+if (2==2 && 1==2) { result = "true"; }
+else { result = "false"; }
+Test(result, "false");
+function threadWork() {
+  sleep(10);
+  Print("  Starting thread work in thread", threadid());
+  sleep(1000);
+  Print("  Finishing thread work in thread", threadid());
+  signal();
+}
+
+Print("Main, starting new thread from ", threadid());
+thread(threadWork());
+Print("Main, waiting for thread in ", threadid());
+wait();
+Print("Main, wait returned in ", threadid());
+
+function returnTest(par) {
+  if (par <= 10) {
+    return 1;
+  } elif (par <= 20) {
+    b = 20;
+    return 2;
+  } elif (par <= 30) {
+    return 3;
+    b = 30;
+  } elif (par <= 40) {
+    b = 40;
+    return 4;
+    b = 50;
+  }
+  b = 60;
+  return 5;
+}
+b = 10;
+result = returnTest(9);
+Test(result, 1); Test(b, 10);
+result = returnTest(19);
+Test(result, 2); Test(b, 20);
+result = returnTest(30);
+Test(result, 3); Test(b, 20);
+result = returnTest(40);
+Test(result, 4); Test(b, 40);
+result = returnTest(50);
+Test(result, 5); Test(b, 60);
+
+a[0] = 0;
+b[a[0]] = 1;
+Test(b[a[0]], 1);
+
+c[b[a[0]]] = 5;
+Test(c[b[a[0]]], 5);
+
+a=-2; b=2;
+f1 = a > 0 && b < 0 ? 10 : -10;
+Test(f1, -10);
+f2 = a < 0 && b < 0 ? 10 : -10;
+Test(f2, -10);
+f3 = a < 0 && b > 2 ? 10 : -10;
+Test(f3, -10);
+t1 = a < 0 && b > 0 ? 10 : -10;
+Test(t1, 10);
+s1 = a < 0 ? -20 : b > 0 ? 20 : -30;
+Test(s1, -20);
+s2 = a > 0 ? -20 : b > 0 ? 20 : -30;
+Test(s2, 20);
+s3 = a > 0 ? -20 : b < 0 ? 20 : -30;
+Test(s3, -30);
+
+x=c=2;
+++x;
+Test(c, 2);
+Test(x, 3);
+
+// Testing ternary operators: only one operator must be executed.
+ternary = {};
+ternary[0] = 20; ternary[1] = 40;
+terres = ternary.size >= 2 ? ternary[1] : ternary[100];
+Test(terres, ternary[1]);
+terres = ternary.size > 100 ? ternary[100] : ternary[0];
+Test(terres, ternary[0]);
+
+function compute(base, power, str, extra) {
+  x = Math.pow(base, power) * extra;
+  newStr = "Hi " + str;
+  return x;
+}
+function work(loops) {
+  x = 0.0;
+  for(i = 0; i < loops; i++) {
+     x = (2*compute(2, 3, "Test", 1000) + 2000)/2;
+  }
+  return (2*compute(2, 3, "Test", 1000) + 2000)/2;
+}
+Test(work(1), 9000);
+
+Print("Testing cycles, assignment, and increment-decrement operators.");
+for (i = 0; i < 3; i++) {
+  myarray[i] = i;
+}
+Test(myarray.size, 3);
+for (i = 0; i < myarray.size; i++) {
+  Test(myarray[i], i);
+}
+i=0;
+while(i < 3) {
+  myarray[i] = i;
+  i += 1;
+}
+for (i = 0; i < myarray.size; i++) {
+  Test(myarray[i], i);
+}
+
+Print("Testing named and default arguments...");
+
+function withList(action = "+", what = {1,2,3,4}) {
+  if (action == "+") {
+    result = 0;
+    for (arg : what) {
+      result += arg;
+    }
+    return result;
+  } elif (action == "*") {
+    result = 1;
+    for (arg : what) {
+      result *= arg;
+    }
+    return result;
+  }
+  return "Unknown action: " + action;
+}
+Test(withList(), 10);
+Test(withList("*"), 24);
+Test(withList("+", {5,10,15}), 30);
+
+function myp(par1, par2, par3 = 100) {
+  return par1 + par2 + par3;
+}
+
+function concat(par1, par2, par3 = "", par4 = "", par5 = "", par6= "") {
+  return par1 + par2 + par3 + par4 + par5;
+}
+
+x = myp(par1 = 11, par2 = 21);
+Test(x, 132);
+
+y = concat(par3="ghi", par2="def_", par1="abc_", par5="_z");
+Test(y, "abc_def_ghi_z");
+
+z = myp(par2=20, par1=70);
+Test(z, 190);
+
+try {
+  z = myp(par2=20);
+  Print("Error. Missing par1 for myp.");
+} catch(exc) {
+  Print("OK. Caught: " + exc);
+}
+try {
+  z = myp(par2=20, par3=70);
+  Print("Error. Missing par1 for myp.");
+} catch(exc) {
+  Print("OK. Caught: " + exc);
+}
+
+Print("Testing local and global variables");
+function localsHere() {
+  localVariable = 10;
+  x  = localVariable;
+}
+
+localsHere();
+try {
+  x = localVariable;
+  Print("Error: Local Variable in Global Scope");
+} catch(exc) {
+  Print("OK. Local Variable not in Global Scope: " + exc);
+}
+
+globScopeVar1 = 10;
+globScopeVar2 = 20;
+function locVarTest() {  
+  DefineLocal("globScopeVar1", 5);
+  DefineLocal("localScopeVar", 15);
+  var localVarOnly = 40;
+  globScopeVar1 = 25;
+  globScopeVar2 = 30;  
+}
+locVarTest();
+Test(NameExists(globScopeVar1, true));
+Test(NameExists(globScopeVar2, true));
+Test(NameExists(localScopeVar, false));
+Test(NameExists(localVarOnly, false));
+Test(globScopeVar1, 10); // no change expected
+Test(globScopeVar2, 30); // change expected
+
+class TestScope
+{
+    testValue = 0;
+    testValue2 = globScopeVar2;
+    TestScope(v) { testValue = v; }
+    function getValue() { return testValue; }
+    function getValue2() { return testValue2; }
+}
+ 
+t = new TestScope(5);
+Test(NameExists(testValue, false));
+Test(t.getValue(), 5);
+Test(t.getValue2(), globScopeVar2);
+
+
+Print("Testing Classes and Inheritance");
+class Stuff1 {
+  x = 2;
+  Stuff1(a) {
+    x = a;
+  } 
+  function addStuff1(n) {
+    return n + x;
+  }
+}
+
+class Stuff2 {
+  y = 3;
+  Stuff2(b) {
+    y = b;
+  } 
+  function addStuff2(n) {
+    return n + y;
+  }
+}
+
+class CoolStuff : Stuff1, Stuff2 {
+  z = 3;
+  CoolStuff(a=1, b=2, c=3) {
+    x = a;
+    y = b;
+    z = c;
+  } 
+  function addCoolStuff() {
+    return x + addStuff2(z);
+  }
+  function ToString() {
+    return "{" + x + "," + y + "," + z + "}";
+  }
+}
+
+addition = 100;
+obj1 = new Stuff1(10);
+Test(obj1.x, 10);
+Test(obj1.addStuff1(addition), 110);
+
+obj2 = new Stuff2(20);
+Test(obj2.y, 20);
+Test(obj2.addStuff2(addition), 120);
+
+newObj = new CoolStuff(11, 13, 17);
+Test(newObj.x, 11);
+Test(newObj.y, 13);
+Test(newObj.z, 17);
+Test(newObj.addCoolStuff(), 41);
+Test(newObj.addStuff1(addition), 111);
+Test(newObj.addStuff2(addition), 113);
+
+obj1 = new CoolStuff();
+obj2 = new CoolStuff(10);
+obj3 = new CoolStuff(10, 20);
+obj4 = new CoolStuff(10, 20, 30);
+
+for( x : {obj1, obj2, obj3, obj4}) {
+  print( x );
+}
+Test(obj1.ToString(), "{1,2,3}");
+Test(obj2.ToString(), "{10,2,3}");
+Test(obj3.ToString(), "{10,20,3}");
+Test(obj4.ToString(), "{10,20,30}");
+
+Print("Testing Dot Notation");
+numVar = 1234.56;
+strVar = numVar.string;
+Test(strVar.first, "1");
+Test(strVar.last, "6");
+Test(strVar.Length, 7);
+
+strVar = "A Simple String!";
+index = strVar.indexOf("S");
+Test(index, 2);
+Test(strVar.substring(index), "Simple String!");
+Test(strVar.upper, "A SIMPLE STRING!");
+Test(strVar.lower, "a simple string!");
+
+arrVar = {"first", "second", "third"};
+print("Properties:", arrVar.Properties);
+Test(arrVar.first, "first");
+Test(arrVar.last, "third");
+Test(arrVar.size, 3);
+
+Test(strVar.Contains("simple"), true);
+Test(strVar.Contains("simple", "case"), false);
+Test(strVar.Equals(strVar.upper), true);
+Test(strVar.StartsWith(strVar.upper), true);
+Test(strVar.EndsWith(strVar.lower, "case"), false);
+Test(strVar.Replace("Simple String", "string"), "A string!");
+Test(strVar.Replace(strVar, strVar.lower), strVar.lower);
+Test(strVar.At(strVar.Length-1), "!");
+
+testStr = "Let's tokenize this.";
+tokens = testStr.split();
+Test(tokens.first, "Let's");
+Test(tokens.last, "this.");
+Test(tokens.size, 3);
+back = tokens.join(" ");
+Test(back, testStr);
+
+arr2["Xxx"]=12;
+arr2["yYy"]=13;
+arr2["zzZ"]=14;
+Test(arr2.keys.size, 3);
+Test(arr2.contains("xXx"), true);
+Test(arr2.contains("Xx"), false);
+Test(arr2.contains("xxx"), true);
+Test(arr2.contains("xxxx"), false);
+
+Test(arr2["zzZ"].Length, 2);
+
+arr2[0] = "item";
+Test(arr2.contains("item"), true);
+Test(arr2.contains("ite"), false);
+
+ct = new CompiledTestAsync();
+ct.NaMe="Lala";
+Test(ct.name, "Lala");
+ct.Extra = "New property";
+props = ct.properties;
+Test(props.contains("Extra"), true);
+print("Properties:", props);
+Test(props.size, 5);
+
+xxx.blah = 10;
+xxx.size  = 33;
+Test(xxx.size, 33);
+print(xxx, xxx.properties);
+
+propsBefore = TestObject.properties;
+TestObject.Color = "blue";
+TestObject.Name  = "Testing";
+Test(TestObject.Type, "SplitAndMerge.TestScriptObject");
+Test(TestObject.ColoR, "blue");
+Test(TestObject.NaME,  "Testing");
+Test(TestObject.properties, propsBefore);
+
+cfunction calculateCompiled(double n) {
+  returnValue = 0.0;
+  x=0.0; y=0.0;
+  for (i = 0; i < n; i++) {
+      x = Math.Sqrt((32*8*4 - 10*(3+7) + 19*4) * 10) / 5;
+      y = Math.Sin(20) + Math.Cos(0.8);
+      returnValue += x + y;
+  }
+  return Math.Round(returnValue, 2);
+}
+function calculateNormal(n) {
+  returnValue = 0;
+  x=0.0; y=0.0;
+  for (i = 0; i < n; i++) {
+      x = Math.Sqrt((32*8*4 - 10*(3+7) + 19*4) * 10) / 5;
+      y = Math.Sin(20) + Math.Cos(0.8);
+      returnValue += x + y;
+  }
+  return Math.Round(returnValue, 2);
+}
+
+startTest = pstime;
+total  = 0;
+for (count = 0; count < 10; count++) {
+  total += calculateNormal(50);
+}
+endTest = pstime;
+Print("Normal calculation: ", endTest - startTest, "ms. Total:", total);
+normalTotal = total;
+
+startTest = pstime;
+total  = 0;
+for (count = 0; count < 10; count++) {
+  total += calculateCompiled(50);
+}
+endTest = pstime;
+Print("Compiled calculation: ", endTest - startTest, "ms. Total:", total);
+Test(normalTotal, total);
+
+cfunction whileCompiled(int n) {
+  i = 0;
+  funcName = "whileCompiled ";
+  while(i < n) {
+    print(funcName, "i=", i, "<", n);
+    i++;
+  }
+}
+cfunction forCompiled(int n) {
+  for(i=0; i < n; i++) {
+    print("forCompiled i=" + i + "<" + n);
+  }
+}
+cfunction string subCompiled(Variable ct, Variable qt) {
+  Test(ct.NaMe, "myName");
+  ct.NaMe="Return Value from subCompiled...";
+  qt.Name = ct.Name;
+  Test(qt.Color, "green");
+  return qt.Name;
+}
+cfunction doCompiled(int n, int m) {
+  ct = new CompiledTestAsync("myName", "green");
+  str = subCompiled(ct, ct);
+  print("doCompiled:", str);
+}
+
+doCompiled(10, 20);
+whileCompiled(3);
+forCompiled(3);
+
+cfunction cget(int n, double x, double y) {
+  z = x + y + pow(2,n);
+  return z;
+}
+cfunction ct(int n) {
+  return cget(n, 0.8, 0.9*2);
+}
+Test(ct(10), 1026.6);
+
+exceptionThrown = false;
+try {
+  x = TestObject.MyNewProperty;
+  Print("ERROR. Exception needed for non-existing property MyNewProperty");
+} catch(exc) {
+  Print("OK. Caught: " + exc);
+  exceptionThrown = true;
+}
+Test(exceptionThrown, true);
+
+TestObject.MyNewProperty     = "NeW";
+Test(TestObject.MyneWproperty, "NeW");
+
+function CreateArray(size, initValue = 0) {
+    result = {};
+    for (i = 0; i < size; i++) {
+        result[i] = initValue;
+    }
+    return result;
+}
+
+pattern = "CreateArray(5, 'Test')";
+uniqueArray = Singleton(pattern);
+uniqueArray[2] = "Extra";
+uniqueArray2 = Singleton(pattern);
+print("Testing Singleton with uniqueArray=", uniqueArray2);
+Test(uniqueArray2[2], "Extra");
+uniqueArray3 = Singleton("CreateArray(9, 'Test')");
+Test(uniqueArray3[2], "Test");
+
+quote1 = "Can't fail!";
+Test(quote1, 'Can\'t fail!');
+quote2 = 'This is in "quotes"';
+Test(quote2, "This is in \"quotes\"");
+
+loop1 = loop2 = loop3 = loop3b = 0;
+loops = 5;
+for (i = 0; i < loops; i++) {
+  arr = {i, 2, 3};
+  for (j = 0; j < loops; j++) {
+    arr2 = {10, 20};
+    loop2++;
+    for (k = 0; k < loops; k++) {
+      if (k > loops) {
+        break;
+      } else {
+        loop3++;
+      }
+      loop3b++;
+    }
+  }
+  loop1++;
+}
+Test(loop1, loops);
+Test(loop2, loops*loops);
+Test(loop3, loops*loops*loops);
+Test(loop3b, loop3);
+Test(arr, {loops-1, 2, 3});
+
+Print("Testing Enums...");
+existingEnum = Enum { SplitAndMerge.Variable.VarType };
+newlyDefined = Enum { None, Horizontal, Vertical, Orthogonal };
+Test(existingEnum.None, 0);
+Test(existingEnum.Object > 0, true);
+Test(newlyDefined.Vertical > newlyDefined.Horizontal, true);
+Test(newlyDefined.Orthogonal, 3);
+
+Print("Testing DateTime...");
+
+someDate = DateTime("9/11/2001 19:31:51", "M/d/yyyy HH:mm:ss");
+someDate.Add("1y3d2M");
+Test(string(someDate, "yyyy/MM/dd"), "2002/11/14");
+someDate.Add("-1h2m3s");
+Test(string(someDate, "HH:mm:ss"), "18:29:48");
+
+dateNow = DateTime();
+dateNow.Add("3y5M");
+dateNow.Add("-3y5M");
+Test(string(dateNow, "M/d/yyyy"), string(DateTime(), "M/d/yyyy"));
+
+x=2;
+switch(x) {
+  case 1: console.log(x, " one"); Test(true, false); break;
+  case 2: console.log(x, " two"); Test(true, true); break;
+  case 3: console.log(x, " three"); Test(true, false); break;
+  default: console.log(x, " default"); Test(true, false);
+}
+switch(++x) {
+  case 1: console.log(x, " one"); Test(true, false);
+  case 2: console.log(x, " two"); Test(true, false);
+  case 3: console.log(x, " three"); Test(true, true);
+  default: console.log(x, " default"); Test(true, true);
+}
+
+Print("Testing Misc. Functions...");
+z = typeof xw_undef;
+typeof z === 'undefined';
+if (typeof z === 'undefined') {
+    print ("Not defined!"); Test(true, true);
+} else {
+    print ("Defined!"); Test(true, false);
+}
+if (z != undefined) {
+    print ("Defined!"); Test(true, false);
+} else {
+    print ("Not defined!"); Test(true, true);
+}
+
+Test(NameExists(IamABrandNewName), false);
+Test(NameExists(arr), true);
+
+for (i = 0; i < 2; i++) {
+  if( !NameExists( MyNewFunction )) {
+    function MyNewFunction(object) { 
+      print( "MyNewFunction");
+    };
+    print( "Just defined MyNewFunction");
+    Test(i, 0);
+  } else {
+    print( "MyNewFunction Exists" );
+    Test(i >= 0, true);
+  }
+}
+
+strArray = {"z3", "b2", "a1"};
+numArray = {51, 39, 33};
+Test(strArray.Sort(), {"a1", "b2", "z3"});
+Test(numArray.Sort(), {33, 39, 51});
+
+Print("Testing Namespaces...");
+namespace ns1 {
+  print("ns1 1");
+  var AllMonths = Enum {January, February, March, April, May, June, July, August, September, October, November, December};
+  print("ns1 2");
+  var alocal = 1;
+  print("ns1 3");
+  var blocal = 2;
+  print("ns1 4");
+  function func(x) {
+    print("ns1 4.1");
+    return x + alocal + blocal;
+  }
+  print("ns1 5");
+  z= func(10);
+  print(z);
+}
+x = ns1.blocal;
+Test(x, 2);
+ns1.w = 44;
+Test(ns1.func(20), 23);
+test(NS1.AllMonths.July, NS1.AllMonths.May + 2);
+
+namespace ns1 {
+  function another(x=0) {
+    return 100 + x + ns1.alocal + ns1.blocal + w;
+  }
+  Test(b, 2);
+  Test(w, 44);
+}
+
+Test(ns1.another(), 147);
+
+namespace ns1 {
+  class CurrentDate {
+    day = "";
+    month = "";
+    year = "";
+    function setDay(n) {
+      day = n;
+    }
+    function setMonth(n) {
+      month = n;
+    }
+    function setYear(n) {
+      year = n;
+    }
+
+    function setCompositDate(value){
+      // incoming value 8/23/2017
+      items = value.split("/");
+      Test(items.size, 3);
+      setMonth(items[0]);
+      setDay(items[1]);
+      setYear(items[2]);
+    }
+
+    function toString() {
+      return month + "/" + day + "/" + year;
+    }
+  }
+
+  ns1.date = "8/23/2017";
+  dt = new CurrentDate();
+  dt.setCompositDate(date);
+  Test(dt, date);
+}
+date = "8/23/2017";
+mydate = new ns1.CurrentDate();
+mydate.setCompositDate(ns1.date);
+Test(mydate, ns1.date);
+Test(mydate.toString().Length, 9);
+
+Print("Testing JSON Parsing");
+jsonString = "{}";
+a = GetVariableFromJSON(jsonString);
+Test(a.type, "ARRAY");
+Test(a.size, 1);
+Test(a[0], "");
+
+jsonString = "[1, 2, 3]";
+a = GetVariableFromJSON(jsonString);
+Test(a.size, 3);
+Test(a[0], "1");
+Test(a[1], "2");
+Test(a[2], "3");
+
+jsonString = '{ "One" : "Eins", "Two": "Zwei"}';
+a = GetVariableFromJSON(jsonString);
+Test(a.size, 2);
+Test(a["One"], "Eins");
+Test(a["Two"], "Zwei");
+
+jsonString = '{ "eins" : 1, "zwei" : 2, "drei": "dreiString", "vier": 4.9, "mehr" : { "uno": "uno in spanish" },
+                "arrayValue" : [ "une", "deux" ] }';
+a = GetVariableFromJSON(jsonString);
+Test(a.size, 6);
+Test(a["vier"], 4.9);
+mehr = a["mehr"];
+Test(mehr["uno"], "uno in spanish");
+arrayValue = a["arrayValue"];
+Test(arrayValue.size, 2);
+Test(arrayValue[0], "une");
+Test(arrayValue[1], "deux");
+
+Print("Testing WebRequests with JSON");
+place      = "8001,ch";
+units      = "&units=metric";
+key        = "5a548a234f9a28212d0e4b18a96e7a51";
+weatherURL = "https://api.openweathermap.org/data/2.5/weather?zip=" + place + units + "&APPID=" + key;
+jsonFromText = "";
+
+function OnSuccess( object, errorCode, text )
+{
+  // text is: {"coord":{"lon":8.54,"lat":47.37},"weather":[{"id":802,"main":"Clouds","description":"scattered clouds","icon":"03n"}],"base":"stations","main":{"temp":9.92,"pressure":1015,"humidity":87,"temp_min":7.78,"temp_max":12.22},"visibility":10000,"wind":{"speed":1.5,"deg":320},"clouds":{"all":40},"dt":1559861701,"sys":{"type":1,"id":6941,"message":0.0094,"country":"CH","sunrise":1559878231,"sunset":1559935141},"timezone":7200,"id":180002468,"name":"Zurich","cod":200}"
+  jsonFromText = GetVariableFromJSON( text );
+  main = jsonFromText["main"];
+  city = jsonFromText["name"];
+  wind = jsonFromText["wind"];
+  sys  = jsonFromText["sys"];
+  //print(main, city, wind, sys);
+  country = sys["country"];
+  print("Temperature in", city, country, main["temp"], "tempMin:", main["temp_min"], "tempMax:",
+        main["temp_max"], 
+        "humidity:", main["humidity"], "pressure:", main["pressure"], "wind:", wind["speed"]);
+  Test(city, "Zürich");
+  Test(country, "CH");
+}
+
+function OnFailure( object, errorCode, text )
+{
+  print( "Failure " + errorCode + ": " + text );
+}
+WebRequest( "GET", weatherURL, "", "", "OnSuccess", "OnFailure" );
+
+print("Testing REGEX...");
+patternYYYYMMDD = '2\d\d\d[01]\d[0-3]\d';
+file = 'report_20191207_20220129.xml';
+regex=Regex(patternYYYYMMDD, file);
+Test(regex.size, 2);
+Test(regex.contains("matches"), true);
+Test(regex.contains("groups"), true);
+matches=regex["matches"];
+Test(matches[0], "20191207");
+Test(matches[1], "20220129");
+
+patternWord = "\b(?<word>\w+)";
+text = "Here are some words.";
+regex=Regex(patternWord, text);
+Test(regex.size, 2);
+matches=regex["matches"];
+Test(matches.size, 4);
+Test(matches[0], "Here");
+
+regex=Regex(patternYYYYMMDD, text);
+Test(regex.size, 0);
+
+text = 'name MyUserName is valid';
+regex = Regex('name (.*) is valid', text);
+Test(regex.size, 2);
+Test(regex.contains("groups"), true);
+groups = regex["groups"];
+Test(groups.size, 2);
+Test(groups[1], "MyUserName");
+
+Print("Testing inline initialization");
+valStr = "someValue";
+b = {"Key1" : valStr, "Key2" : "value2", "Key3" : "value3"};
+Test(b["key1"], valStr);
+Test(b["key2"], "value2");
+Test(b.size, 3);
+c = { valStr, "value2" };
+Test(c[0], valStr);
+Test(c[1], "value2");
+Test(c.size, 2);
+
+Timeout = 100;
+MySender = "Tester";
+print(Now(), "Scheduling to run in ", Timeout, "ms.");
+
+function timer_timeout(Sender, Arg) {
+  print(Now(), "Running script from [" + SENDER + "] with argument [" + ARG + "]");
+}
+ScheduleRun(timeout, "timer_timeout", MySender, 'Arg with "double quotes"');
+
+end = pstime;
+Print("Process CPU Time: ", end, " ms. Script execution: ", end - start, " ms.");
+now = now("yyyy/MM/dd HH:mm:ss.fff");
+print("Finished.", now);
+
+Sleep(2000);

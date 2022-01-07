@@ -1,0 +1,10 @@
+myCube = CreateGameObject();
+DebugLog(this.Type);
+V3 = CreateVector3(10,20,30);
+myCube.Translate = V3;
+V5[0] = 0;
+V5[1] = 10;
+V5[2] = 0;
+V5[3] = 30;
+myCube.RotateAround = V5;
+V6[0] = 0;

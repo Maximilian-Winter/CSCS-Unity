@@ -1,0 +1,180 @@
+﻿using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
+using SplitAndMerge;
+using UnityEngine;
+
+namespace CSCS
+{
+    public class Vector3ScriptObject : ScriptObject
+    {
+        private Vector3 m_Vector = new Vector3(0.0f, 0.0f, 0.0f);
+        private static readonly List<string> s_properties = new()
+        {
+            "x", "y", "z", "add", "subtract", "normalize"
+        };
+        public static Variable GetVariableFromVector3(Vector3 aVector)
+        {
+            Vector3ScriptObject myObject = new Vector3ScriptObject();
+           
+            var mre = new ManualResetEvent(false);
+            
+            CscsScriptingController.ExecuteInUpdate(() =>
+            {
+                Debug.Log("Test: " + myObject);
+                myObject.SetProperty("x", new Variable(aVector.x));
+                myObject.SetProperty("y", new Variable(aVector.y));
+                myObject.SetProperty("z", new Variable(aVector.z));
+                mre.Set();
+            });
+
+            var newValue = new Variable(myObject);
+            Debug.Log("Test: " + newValue);
+            
+            mre.WaitOne();
+            return newValue;
+        }
+
+        public static Vector3 GetVector3FromVariable(Variable aVector)
+        {
+            var newValue = new Vector3
+            {
+                x = aVector.GetProperty("x").AsFloat(),
+                y = aVector.GetProperty("y").AsFloat(),
+                z = aVector.GetProperty("z").AsFloat(),
+            };
+            return newValue;
+        }
+
+        public Task<Variable> SetProperty(string name, Variable value)
+        {
+            var newValue = Variable.EmptyInstance;
+            var mre = new ManualResetEvent(false);
+
+            CscsScriptingController.ExecuteInUpdate(() =>
+            {
+                if (value.Type == Variable.VarType.ARRAY)
+                {
+                    m_Vector = GetVector3FromVariable(value);
+                }
+                else
+                {
+                    switch (name)
+                    {
+                        case "x":
+                            newValue = SetVectorPropertyX(value);
+                            break;
+                        case "y":
+                            newValue = SetVectorPropertyY(value);
+                            break;
+                        case "z":
+                            newValue = SetVectorPropertyZ(value);
+                            break;
+                        default:
+                            newValue = Variable.EmptyInstance;
+                            break;
+                    }
+                }
+                mre.Set();
+            });
+
+            mre.WaitOne();
+            return Task.FromResult(newValue);
+        }
+
+        public Task<Variable> GetProperty(string name, List<Variable> args = null, ParsingScript script = null)
+        {
+            var newValue = Variable.EmptyInstance;
+            var mre = new ManualResetEvent(false);
+
+            CscsScriptingController.ExecuteInUpdate(() =>
+            {
+                switch (name)
+                {
+                    case "x":
+                        newValue = new Variable(GetVectorPropertyX());
+                        break;
+                    case "y":
+                        newValue = new Variable(GetVectorPropertyY());
+                        break;
+                    case "z":
+                        newValue = new Variable(GetVectorPropertyZ());
+                        break;
+                    case "add":
+                        newValue = args != null && args.Count > 0 ? Add(args[0]) : Variable.EmptyInstance;
+                        break;
+                    case "subtract":
+                        newValue = args != null && args.Count > 0 ? Subtract(args[0]) : Variable.EmptyInstance;
+                        break;
+                    case "normalize":
+                        newValue = Normalize();
+                        break;
+                }
+
+                mre.Set();
+            });
+
+            mre.WaitOne();
+            return Task.FromResult(newValue);
+        }
+        
+        public Variable SetVectorPropertyX(Variable variable)
+        {
+            m_Vector.x = variable.AsFloat();
+            return new Variable(GetVariableFromVector3(m_Vector));
+        }
+        
+        public Variable SetVectorPropertyY(Variable variable)
+        {
+            m_Vector.y = variable.AsFloat();
+            return new Variable(GetVariableFromVector3(m_Vector));
+        }
+        
+        public Variable SetVectorPropertyZ(Variable variable)
+        {
+            m_Vector.z = variable.AsFloat();
+            return new Variable(GetVariableFromVector3(m_Vector));
+        }
+
+
+        public List<string> GetProperties()
+        {
+            return s_properties;
+        }
+        
+        public Variable GetVectorPropertyX()
+        {
+            return new Variable(m_Vector.x);
+        }
+        
+        public Variable GetVectorPropertyY()
+        {
+            return new Variable(m_Vector.y);
+        }
+        
+        public Variable GetVectorPropertyZ()
+        {
+            return new Variable(m_Vector.z);
+        }
+
+        public Variable Add(Variable vectorVariable)
+        {
+            Vector3 otherVector = GetVector3FromVariable(vectorVariable);
+            m_Vector += otherVector;
+            return GetVariableFromVector3(m_Vector);
+        }
+        
+        public Variable Subtract(Variable vectorVariable)
+        {
+            Vector3 otherVector = GetVector3FromVariable(vectorVariable);
+            m_Vector -= otherVector;
+            return GetVariableFromVector3(m_Vector);
+        }
+        
+        public Variable Normalize()
+        {
+            m_Vector = m_Vector.normalized;
+            return GetVariableFromVector3(m_Vector);
+        }
+    }
+}

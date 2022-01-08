@@ -1,0 +1,17 @@
+{
+    "name": "ScriptableArchitectureFramework",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f902f9a5aac15dfa275a18279a1db246",
+        "GUID:86fef3ba5a54bdc45a7699a5f86ac662"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

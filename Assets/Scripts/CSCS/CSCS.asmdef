@@ -1,0 +1,17 @@
+{
+    "name": "CSCS",
+    "rootNamespace": "",
+    "references": [
+        "GUID:ab6d1676cc21ee74588aad5252d8f31c",
+        "GUID:6089aa1c9dcf6114ebfbf8c82f18a74f"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

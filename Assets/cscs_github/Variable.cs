@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Unity.Mathematics;
 
 namespace SplitAndMerge
 {
@@ -1657,9 +1656,6 @@ namespace SplitAndMerge
         protected double m_value;
         protected string m_string;
         protected object m_object;
-        protected float3 m_vector3;
-        protected float4 m_vector4;
-        protected quaternion m_quaternion;
         protected DateTime m_datetime;
         CustomFunction m_customFunctionGet;
         CustomFunction m_customFunctionSet;

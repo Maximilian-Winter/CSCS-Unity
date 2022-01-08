@@ -12,7 +12,6 @@ namespace CSCS
         public static void DefineScriptFunctions(GameObject unityEntityPrefab)
         {
             ParserFunction.RegisterFunction("CreateGameObject", new CreateCubeFunction(unityEntityPrefab));
-            ParserFunction.RegisterFunction("CreateVector3", new CreateVector3Function());
             ParserFunction.RegisterFunction("DebugLog", new DebugLogFunction());
             /*ParserFunction.RegisterFunction("CreateCapsule", new CreateCapsuleFunction());
             ParserFunction.RegisterFunction("CreateTube", new CreateTubeFunction());*/

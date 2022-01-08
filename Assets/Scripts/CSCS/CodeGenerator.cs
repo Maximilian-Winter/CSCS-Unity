@@ -298,7 +298,7 @@ namespace CSCS
             {
                 if (p.GetGenericArguments().Length == 0)
                 {
-                    sb.AppendLine( "\"" + p.Name + "\" ,");
+                    sb.AppendLine("case \"" + p.Name + "\":\n break;\n");
                 }
             }
             
@@ -331,7 +331,7 @@ namespace CSCS
             {
                 if (p.GetGenericArguments().Length == 0)
                 {
-                    sb.AppendLine("\"" + p.Name + "\" ,");
+                    sb.AppendLine("case \"" + p.Name + "\":\n break;\n");
                 }
             }
             
@@ -353,4 +353,5 @@ namespace CSCS
             Debug.Log(GenerateCode(typeof(Component)));
         }
     }
+    
 }

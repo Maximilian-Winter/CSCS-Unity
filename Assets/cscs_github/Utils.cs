@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -121,6 +123,13 @@ namespace SplitAndMerge
             {
                 string realName = Constants.GetRealName(name);
                 ThrowErrorMsg("Incomplete arguments for [" + realName + "]", null, name);
+            }
+        }
+        
+        public static void CheckNotNull(object obj, string name)
+        {
+            if (obj == null) {
+                throw new ArgumentException("Invalid argument in function [" + name + "]");
             }
         }
 
@@ -800,5 +809,6 @@ namespace SplitAndMerge
                 }
             }
         }
+
     }
 }

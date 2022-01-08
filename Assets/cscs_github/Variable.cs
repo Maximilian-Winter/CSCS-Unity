@@ -98,6 +98,7 @@ namespace SplitAndMerge
         {
             Object = o;
         }
+        
 
         public virtual Variable Clone()
         {

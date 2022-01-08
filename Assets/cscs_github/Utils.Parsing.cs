@@ -8,6 +8,7 @@ namespace SplitAndMerge
 {
     public partial class Utils
     {
+        
         public static Variable GetItem(ParsingScript script, bool eatLast = true)
         {
             script.MoveForwardIf(Constants.NEXT_ARG, Constants.SPACE);

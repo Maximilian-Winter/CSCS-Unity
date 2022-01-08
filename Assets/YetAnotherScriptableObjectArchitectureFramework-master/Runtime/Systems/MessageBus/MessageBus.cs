@@ -5,7 +5,14 @@ using UnityEngine;
 
 namespace ScriptableObjects.ScriptableArchitecture.Systems.MessageBus
 {
-
+   public class WelcomeMessage: IMessage
+   {
+      public Type MessageType
+      {
+         get => typeof(WelcomeMessage);
+      }
+   }
+   
 [CreateAssetMenu( menuName = "ScriptableSystems/MessageBus", fileName = "MessageBus", order = 0 )]
 public class MessageBus : ScriptableSystem <MessageBus>
 {
@@ -71,6 +78,9 @@ public class MessageBus : ScriptableSystem <MessageBus>
          Instance.TypesToRecipients.Add( type, new List <IMessageBusRecipient>() );  
          Instance.TypesToRecipients[type].Add( recipient);
       }
+
+      WelcomeMessage welcomeMessage = new WelcomeMessage();
+      recipient.ReceiveMessage( welcomeMessage );
    }
    
    public static void SubscribeToAllMessagesOfTypeFromSender <T>(IMessageBusSender sender, IMessageBusRecipient recipient) where T : IMessage
@@ -97,7 +107,8 @@ public class MessageBus : ScriptableSystem <MessageBus>
             recipient.ReceiveMessage( message  );
          }
       }
-      
+      if(sender == null)
+         return;
       
       if ( Instance.SendersToRecipients.ContainsKey( sender ) )
       {

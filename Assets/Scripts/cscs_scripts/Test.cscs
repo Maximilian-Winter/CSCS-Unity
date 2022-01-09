@@ -1,9 +1,19 @@
-myGameApiProxy = CreateGameApiProxyObject();
-V6[0] = 1;
-function MessageBusCallback()
+class MyMessageBusCallbackClass
 {
-   DebugLog("Callback from Message Bus: " + V6[0]);
-   V6[0]++;
-}
+    V6 = 0;
+    MyMessageBusCallbackClass(init)
+    {
+        V6 = init;
+    }
 
-SubscribeToMessageBus("V6", "MessageBusCallback", "WelcomeMessage");
+    function ReceiveMessage()
+    {
+        DebugLog("Callback from Message Bus: " + V6);
+        V6 = V6 + 1;
+    }
+}
+MyMessageBusCallback = new MyMessageBusCallbackClass(42);
+myGameApiProxy = CreateGameApiProxyObject();
+myMessageBusProxy = myGameApiProxy.GetMessageBusProxy();
+
+myMessageBusProxy.SubscribeToMessage("MyMessageBusCallback", "WelcomeMessage");

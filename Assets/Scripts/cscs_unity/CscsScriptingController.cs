@@ -49,10 +49,6 @@ namespace CSCS
         }
         public static void AddScriptToQueue( string sCode )
         {
-            ExecuteInUpdate(() =>
-            {
-                Debug.Log("Add To Script Queue " + sCode);
-            });
             ScriptCommand command = new ScriptCommand(sCode);
             m_scriptQueue.Enqueue(command);
         }
@@ -84,10 +80,6 @@ namespace CSCS
                     
                     if (m_scriptQueue.TryDequeue(out next))
                     {
-                        ExecuteInUpdate(() =>
-                        {
-                            Debug.Log("Next Command " + next.command);
-                        });
                         next.Execute();
                     }
                 }

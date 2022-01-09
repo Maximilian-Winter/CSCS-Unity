@@ -157,13 +157,8 @@ namespace SplitAndMerge
                 List<string> callbackFunctions = MessageTypesToCallbackFunctions[message.GetType().Name];
                 foreach (string callbackFunction in callbackFunctions)
                 {
-                    body += $"{callbackFunction}();\n";
+                    body += $"{callbackFunction}.ReceiveMessage();\n";
                 }
-
-                CscsScriptingController.ExecuteInUpdate(() =>
-                {
-                    Debug.Log("Body: " + body);
-                });
                 CscsScriptingController.AddScriptToQueue(body);
             }
 

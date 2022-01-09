@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CSCS.Unity;
@@ -17,8 +18,8 @@ namespace CSCS
         };
 
         private CscsUnityEntity m_UnityEntity = null;
-        
 
+        private MessageBusProxyObject m_MessageBusProxyObject = new MessageBusProxyObject();
         public GameApiProxyObject(GameObject unityEntityPrefab)
         {
             var mre = new ManualResetEvent(false);
@@ -47,7 +48,7 @@ namespace CSCS
                 switch (sPropertyName)
                 {
                     case "GetMessageBusProxy":
-                        newValue = new Variable(MessageBus.Instance as object);
+                        newValue = new Variable(m_MessageBusProxyObject);
                         break;
                     default:
                         Debug.Log("CallGetDefault: " + sPropertyName);

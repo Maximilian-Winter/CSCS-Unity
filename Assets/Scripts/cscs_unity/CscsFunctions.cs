@@ -113,7 +113,7 @@ namespace CSCS
         {
             UnityEntityPrefab = unityEntityPrefab;
         }
-        static Variable CreateEntityOfType(string sPrimitiveType, GameObject unityEntityPrefab, List<Variable> args = null)
+        static Variable CreateGameApiProxyObject(GameObject unityEntityPrefab, List<Variable> args = null)
         {
             GameApiProxyObject myObject = new GameApiProxyObject(unityEntityPrefab);
             Variable newValue = new Variable (myObject);
@@ -121,9 +121,7 @@ namespace CSCS
         }
         protected override Variable Evaluate(ParsingScript script)
         {
-            List <Variable> args = script.GetFunctionArgs();
-            string sPrimitiveType = Utils.GetSafeString(args, 0, "Cube");
-            Variable newValue = CreateEntityOfType(sPrimitiveType, UnityEntityPrefab);
+            Variable newValue = CreateGameApiProxyObject(UnityEntityPrefab);
             return newValue;
         }
     }

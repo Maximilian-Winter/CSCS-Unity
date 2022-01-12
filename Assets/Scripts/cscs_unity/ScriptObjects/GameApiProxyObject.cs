@@ -48,10 +48,9 @@ namespace CSCS
                 switch (sPropertyName)
                 {
                     case "GetMessageBusProxy":
-                        newValue = new Variable(m_MessageBusProxyObject);
+                        newValue = new Variable(new MessageBusProxyObject());
                         break;
                     default:
-                        Debug.Log("CallGetDefault: " + sPropertyName);
                         newValue = Variable.EmptyInstance;
                         break;
                 }

@@ -40,6 +40,7 @@ public class MessageBusProxyObject : ScriptObject
                 case "GetMessageQueue":
                     if (args != null && args.Count > 1 )
                     {
+                        Debug.Log( args[1].AsString() );
                         newValue = new Variable(MessageBus.Instance.RecipientsToMessages[args[0]][args[1].AsString()]);
                     }
                     break;
@@ -48,7 +49,6 @@ public class MessageBusProxyObject : ScriptObject
                     {
                         foreach ( Type messageType in MessageTypes )
                         {
-                            Debug.Log( args[1].AsString() + "==" + messageType.Name );
                             if ( args[1].AsString() == messageType.Name  )
                             {
                                     
@@ -91,65 +91,60 @@ public class MessageBusProxyObject : ScriptObject
         return s_properties;
     }
 }
+
+public class MessageQueue : Queue<Message>, ScriptObject
+{
+    private static readonly List<string> s_properties = new()
+    {
+        "DequeueMessage"
+    };
+
+    public Task<Variable> SetProperty(string name, Variable value)
+    {
+        var newValue = Variable.EmptyInstance;
+        /*switch (name)
+        {
+           default:
+              break;
+        }*/
+        return Task.FromResult(newValue);
+    }
+
+    public Task<Variable> GetProperty(string name, List<Variable> args = null, ParsingScript script = null)
+    {
+        var newValue = Variable.EmptyInstance;
+        var mre = new ManualResetEvent(false);
+        CscsScriptingController.ExecuteInUpdate(() =>
+        {
+            switch (name)
+            { 
+                case "DequeueMessage":
+                    if ( script != null )
+                    {
+                        newValue = new Variable(Dequeue());
+                    }
+                    break;
+                default:
+                    break;
+            }
+
+            mre.Set();
+        });
+
+        mre.WaitOne();
+              
+        return Task.FromResult(newValue);
+    }
+
+    public List<string> GetProperties()
+    {
+        return s_properties;
+    }
+}
    
 [CreateAssetMenu( menuName = "ScriptableSystems/MessageBus", fileName = "MessageBus", order = 0 )]
 public class MessageBus : ScriptableSystem <MessageBus>
 {
-    [Serializable]
-    public class SenderTypeAssociation
-    {
-        public IMessageBusSender Sender;
-        public Type Type;
-        public IMessageBusRecipient Recipient;
-    }
-
-    public class MessageQueue : Queue<Message>, ScriptObject
-    {
-        private static readonly List<string> s_properties = new()
-        {
-            "DequeMessage"
-        };
-
-        public Task<Variable> SetProperty(string name, Variable value)
-        {
-            var newValue = Variable.EmptyInstance;
-            /*switch (name)
-            {
-               default:
-                  break;
-            }*/
-            return Task.FromResult(newValue);
-        }
-
-        public Task<Variable> GetProperty(string name, List<Variable> args = null, ParsingScript script = null)
-        {
-            var newValue = Variable.EmptyInstance;
-            var mre = new ManualResetEvent(false);
-            CscsScriptingController.ExecuteInUpdate(() =>
-            {
-                switch (name)
-                { 
-                    case "DequeMessage":
-                        newValue = new Variable(Dequeue());
-                        break;
-                    default:
-                        break;
-                }
-
-                mre.Set();
-            });
-
-            mre.WaitOne();
-              
-            return Task.FromResult(newValue);
-        }
-
-        public List<string> GetProperties()
-        {
-            return s_properties;
-        }
-    }
-   
     public class RecipientsToMessageQueuesDictionary : Dictionary<IMessageBusRecipient, Dictionary<string, MessageQueue>> {}
    
     [Serializable]

@@ -24,6 +24,7 @@ namespace CSCS
 
         public void OnDestroy()
         {
+            //SplitAndMerge.DebuggerServer.StopServer();
             OnShutdown();
         }
 
@@ -32,7 +33,6 @@ namespace CSCS
             CscsFunctions.DefineScriptFunctions(UnityEntityPrefab);
             Task.Run(() => { RunScriptingEngineThread(); });
             ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
-
         }
         public void OnShutdown()
         {

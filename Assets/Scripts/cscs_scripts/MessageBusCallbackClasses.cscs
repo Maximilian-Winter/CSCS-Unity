@@ -1,0 +1,16 @@
+class MyWelcomeMessageCallback
+{
+    MessageBusProxy = null;
+    MyWelcomeMessageCallback(messageBus)
+    {
+        this.MessageBusProxy = messageBus;
+    }
+
+    function ReceiveMessage()
+    {
+        messageQueue = MessageBusProxy.GetMessageQueue(this, "WelcomeMessage");
+        welcomeMessage = messageQueue.DequeueMessage();
+        
+        DebugLog("Callback from Message Bus: " + welcomeMessage.WelcomeMessage);
+    }
+}

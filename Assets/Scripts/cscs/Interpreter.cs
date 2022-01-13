@@ -5,6 +5,7 @@ using System.Configuration;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using CSCS;
 using static SplitAndMerge.ParserFunction;
 
 namespace SplitAndMerge

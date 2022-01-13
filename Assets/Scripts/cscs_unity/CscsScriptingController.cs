@@ -31,7 +31,7 @@ namespace CSCS
         public void OnStartup()
         {
             CscsFunctions.DefineScriptFunctions(UnityEntityPrefab);
-            Task.Run(() => { RunScriptingEngineThread(); });
+            Task.Run(RunScriptingEngineThread);
             ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
         }
         public void OnShutdown()

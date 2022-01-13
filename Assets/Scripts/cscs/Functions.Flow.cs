@@ -522,6 +522,7 @@ namespace SplitAndMerge
 
             public Task<Variable> SetProperty(string name, Variable value)
             {
+                
                 m_properties[name] = value;
                 m_propSet.Add(name);
                 m_propSetLower.Add(name.ToLower());

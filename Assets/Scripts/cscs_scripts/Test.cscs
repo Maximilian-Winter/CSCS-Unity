@@ -1,8 +1,8 @@
 
 include("MessageBusCallbackClasses.cscs")
-GameApiProxy = CreateGameApiProxyObject();
-MessageBusProxy = GameApiProxy.GetMessageBusProxy();
+gGameApiProxy = CreateGameApiProxyObject();
+gMessageBusProxy = GameApiProxy.GetMessageBusProxy();
 
-MyWelcomeMessageCallbackClass = new MyWelcomeMessageCallback(MessageBusProxy);
+gMyWelcomeMessageCallbackClass = new MyWelcomeMessageCallback(gMessageBusProxy);
 
-MessageBusProxy.SubscribeToMessage("MyWelcomeMessageCallbackClass", "WelcomeMessage", MyWelcomeMessageCallbackClass);
+gMessageBusProxy.SubscribeToMessage("gMyWelcomeMessageCallbackClass", "WelcomeMessage", MyWelcomeMessageCallbackClass);

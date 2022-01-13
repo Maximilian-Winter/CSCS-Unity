@@ -18,7 +18,7 @@ namespace CSCS
         void Awake()
         {
             SplitAndMerge.Interpreter.Instance.Init();
-            SplitAndMerge.DebuggerServer.StartServer(13337);
+            //SplitAndMerge.DebuggerServer.StartServer(13337);
             OnStartup();
         }
 
@@ -31,7 +31,7 @@ namespace CSCS
         {
             CscsFunctions.DefineScriptFunctions(UnityEntityPrefab);
             Task.Run(() => { RunScriptingEngineThread(); });
-            //ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
+            ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
 
         }
         public void OnShutdown()

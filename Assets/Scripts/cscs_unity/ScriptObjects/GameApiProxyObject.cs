@@ -10,7 +10,7 @@ using UnityEngine;
 
 namespace CSCS
 {
-    public class GameApiProxyObject : ScriptObject
+    public class GameApiProxyObject : Variable, ScriptObject
     {
         private static readonly List<string> s_properties = new()
         {

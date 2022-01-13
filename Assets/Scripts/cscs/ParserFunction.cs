@@ -297,6 +297,8 @@ namespace SplitAndMerge
                 return GetFunction(name, script);
             }
             name = Constants.ConvertName(name);
+
+            string realName = Constants.GetRealName( name );
             ParserFunction impl;
             StackLevel localStack = script != null &&  script.StackLevel != null ?
                  script.StackLevel : s_locals.Count > StackLevelDelta ? s_lastExecutionLevel : null;
@@ -304,6 +306,11 @@ namespace SplitAndMerge
             {
                 Dictionary<string, ParserFunction> local = localStack.Variables;
                 if (local.TryGetValue(name, out impl))
+                {
+                    return impl;
+                }
+                
+                if (local.TryGetValue(realName, out impl))
                 {
                     return impl;
                 }

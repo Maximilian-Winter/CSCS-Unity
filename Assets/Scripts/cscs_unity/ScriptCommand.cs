@@ -31,6 +31,7 @@ namespace CSCS
             catch (Exception exception) {
                 errorMessage = exception.Message;
                 SplitAndMerge.ParserFunction.InvalidateStacksAfterLevel(0);
+                Debug.Log( "CSCS ERROR: " + errorMessage );
             }
         }
     }

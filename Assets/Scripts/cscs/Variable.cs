@@ -119,7 +119,16 @@ namespace SplitAndMerge
             //Variable newVar = new Variable();
             //newVar.Copy(this);
             Variable newVar = EmptyInstance;
-            newVar = (Variable)this.MemberwiseClone();
+            
+            if ( this.Object is ScriptObject )
+            {
+                newVar = new Variable( Object as ScriptObject );
+            }
+            else
+            {
+                newVar = (Variable)this.MemberwiseClone();
+            }
+
             newVar.MessageTypesToCallbackFunctions = new Dictionary<string, List<string>>(MessageTypesToCallbackFunctions) ;
 
 

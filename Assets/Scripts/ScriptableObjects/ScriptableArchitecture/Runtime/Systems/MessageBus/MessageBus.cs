@@ -13,7 +13,7 @@ using UnityEngine;
 namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
 {
 
-public class MessageBusProxyObject : ScriptObject
+public class MessageBusProxyObject : Variable, ScriptObject
 {
     public MessageBusProxyObject()
     {
@@ -40,8 +40,15 @@ public class MessageBusProxyObject : ScriptObject
                 case "GetMessageQueue":
                     if (args != null && args.Count > 1 )
                     {
-                        Debug.Log( args[1].AsString() );
-                        newValue = new Variable(MessageBus.Instance.RecipientsToMessages[args[0]][args[1].AsString()]);
+                        Debug.Log( args[0] + ", " + args[1].AsString()  );
+                        if(MessageBus.Instance.RecipientsToMessages.ContainsKey( args[0] ))
+                        {
+                            newValue = new Variable(MessageBus.Instance.RecipientsToMessages[args[0]][args[1].AsString()]);
+                        }
+                        else
+                        {
+                            Debug.Log( "Message Recipient not found!" );
+                        }
                     }
                     break;
                 case "SubscribeToMessage":

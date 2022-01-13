@@ -91,8 +91,8 @@ namespace SplitAndMerge
             RegisterEnums();
             RegisterActions();
 
-            ParserFunction.AddGlobal(Constants.THIS,
-                new GetVarFunction(new Variable(Variable.VarType.ARRAY)));
+            //ParserFunction.AddGlobal(Constants.THIS,
+            //    new GetVarFunction(new Variable(Variable.VarType.ARRAY)));
 
             InitStandalone();
             CompiledClass.Init();

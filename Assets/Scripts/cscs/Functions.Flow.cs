@@ -439,7 +439,7 @@ namespace SplitAndMerge
 
         public void AddProperty(string name, Variable property)
         {
-            m_classProperties[name] = property;
+            m_classProperties[name] = property.DeepClone();
         }
 
         public static CSCSClass GetClass(string name)
@@ -2077,7 +2077,7 @@ namespace SplitAndMerge
             if (script.ClassInstance != null)
             {
                 //varName = script.ClassInstance.InstanceName + "." + m_name;
-                varValue = script.ClassInstance.SetProperty(m_name, varValue).Result;
+                script.ClassInstance.SetProperty(m_name, varValue);
                 return varValue.DeepClone();
             }
 

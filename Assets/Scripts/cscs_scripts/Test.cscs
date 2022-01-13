@@ -1,21 +1,22 @@
 class MyMessageBusCallbackClass
 {
-    MyMessageBusCallbackClass(gameApiProxy)
+    MessageBusProxy = null;
+    MyMessageBusCallbackClass(messageBus)
     {
-        m_messageBusProxy = gameApiProxy.GetMessageBusProxy();
+        MessageBusProxy = messageBus;
     }
 
     function ReceiveMessage()
     {
-        messageQueue = m_messageBusProxy.GetMessageQueue(this, "WelcomeMessage");
+        messageQueue = MessageBusProxy.GetMessageQueue(this, "WelcomeMessage");
         welcomeMessage = messageQueue.DequeueMessage();
         
         DebugLog("Callback from Message Bus: " + welcomeMessage.WelcomeMessage);
     }
 }
-GameApiProxy = CreateGameApiProxyObject();
-MessageBusProxy = GameApiProxy.GetMessageBusProxy();
+gGameApiProxy = CreateGameApiProxyObject();
+gMessageBusProxy = gGameApiProxy.GetMessageBusProxy();
 
-MyMessageBusCallback = new MyMessageBusCallbackClass(GameApiProxy);
+gMyMessageBusCallback = new MyMessageBusCallbackClass(gMessageBusProxy);
 
-MessageBusProxy.SubscribeToMessage("MyMessageBusCallback", "WelcomeMessage");
+gMessageBusProxy.SubscribeToMessage("gMyMessageBusCallback", "WelcomeMessage");

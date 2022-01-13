@@ -20,18 +20,7 @@ namespace CSCS
         private CscsUnityEntity m_UnityEntity = null;
 
         private MessageBusProxyObject m_MessageBusProxyObject = new MessageBusProxyObject();
-        public GameApiProxyObject(GameObject unityEntityPrefab)
-        {
-            var mre = new ManualResetEvent(false);
-            CscsScriptingController.ExecuteInUpdate(() =>
-            {
-                m_UnityEntity = GameObject.Instantiate(unityEntityPrefab).GetComponent<CscsUnityEntity>();
-                mre.Set();
-            });
-
-            mre.WaitOne();
-        }
-
+       
         public List<string> GetProperties()
         {
             return s_properties;
@@ -48,6 +37,10 @@ namespace CSCS
                 switch (sPropertyName)
                 {
                     case "GetMessageBusProxy":
+                        newValue = new Variable(new MessageBusProxyObject());
+                        break;
+                    case "GetGameObjectProxy":
+                        
                         newValue = new Variable(new MessageBusProxyObject());
                         break;
                     default:

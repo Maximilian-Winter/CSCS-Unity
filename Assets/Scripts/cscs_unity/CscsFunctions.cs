@@ -20,8 +20,7 @@ public class CscsFunctions
 
         ParserFunction.RegisterFunction( "DebugLog", new DebugLogFunction() );
         ParserFunction.RegisterFunction( "InvokeNative", new InvokeNativeFunction() );
-        //ParserFunction.AddAction(Constants.THIS + ".", new ThisDotFunction());
-        ParserFunction.AddAction( Constants.THIS, new ThisFunction() );
+        ParserFunction.RegisterFunction( Constants.THIS, new ThisFunction() );
        // ParserFunction.AddAction( Constants.THIS + ".", new ThisDotFunction() );
         /*ParserFunction.RegisterFunction("CreateCapsule", new CreateCapsuleFunction());
         ParserFunction.RegisterFunction("CreateTube", new CreateTubeFunction());*/
@@ -78,7 +77,6 @@ public class ThisFunction : ActionFunction
 
     protected override Variable Evaluate( ParsingScript script )
     {
-        
         return script.ClassInstance != null ? Utils.GetVariable( script.ClassInstance.InstanceName, script ) : null;
     }
     
@@ -89,30 +87,6 @@ public class ThisFunction : ActionFunction
 
     #endregion
 }
-
-public class ThisDotFunction : ActionFunction
-{
-    #region Protected
-
-    protected override Variable Evaluate( ParsingScript script )
-    {
-        string varName = Utils.GetNextToken( script, true );
-        var variable =  Utils.GetVariable( varName, script );
-
-        return variable;
-    }
-    
-    protected override Task < Variable > EvaluateAsync( ParsingScript script )
-    {
-        var varName = Utils.GetNextToken( script, true );
-        var variable =  Utils.GetVariableAsync( varName, script );
-
-        return variable;
-    }
-
-    #endregion
-}
-
 
 public class CreateGameApiProxyObjectFunction : ParserFunction
 {
@@ -131,20 +105,8 @@ public class CreateGameApiProxyObjectFunction : ParserFunction
 
     protected override Variable Evaluate( ParsingScript script )
     {
-        Variable newValue = CreateGameApiProxyObject( UnityEntityPrefab );
-
-        return newValue;
-    }
-
-    #endregion
-
-    #region Private
-
-    private static Variable CreateGameApiProxyObject( GameObject unityEntityPrefab, List < Variable > args = null )
-    {
-        GameApiProxyObject myObject = new GameApiProxyObject( unityEntityPrefab );
+        GameApiProxyObject myObject = new GameApiProxyObject();
         Variable newValue = new Variable( myObject );
-
         return newValue;
     }
 

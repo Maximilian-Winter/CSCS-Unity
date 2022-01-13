@@ -1,7 +1,8 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+
+namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility
+{
 
 public class NavMeshPathDebug : MonoBehaviour
 {
@@ -9,15 +10,15 @@ public class NavMeshPathDebug : MonoBehaviour
     private NavMeshAgent m_Agent;
 
     private LineRenderer m_LineRenderer;
-    
+
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         m_LineRenderer = GetComponent < LineRenderer >();
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if ( m_Agent.hasPath )
         {
@@ -30,4 +31,6 @@ public class NavMeshPathDebug : MonoBehaviour
             m_LineRenderer.enabled = false;
         }
     }
+}
+
 }

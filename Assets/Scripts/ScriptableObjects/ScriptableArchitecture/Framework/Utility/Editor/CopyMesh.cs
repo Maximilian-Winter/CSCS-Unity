@@ -1,13 +1,15 @@
 ﻿using UnityEditor;
 using UnityEngine;
 
-namespace Utility
+namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility.Editor
 {
 
 public static class CopyMesh
 {
-    [MenuItem("Assets/CopySelectedMeshAndSaveItInSamePath")]
-    static void CopySelectedMeshAndSaveItInSamePath()
+    #region Private
+
+    [MenuItem( "Assets/CopySelectedMeshAndSaveItInSamePath" )]
+    private static void CopySelectedMeshAndSaveItInSamePath()
     {
         Mesh mesh = Selection.activeObject as Mesh;
         Mesh newmesh = new Mesh();
@@ -17,8 +19,10 @@ public static class CopyMesh
         newmesh.normals = mesh.normals;
         newmesh.colors = mesh.colors;
         newmesh.tangents = mesh.tangents;
-        AssetDatabase.CreateAsset(newmesh, AssetDatabase.GetAssetPath(mesh) + " copy.asset");
+        AssetDatabase.CreateAsset( newmesh, AssetDatabase.GetAssetPath( mesh ) + " copy.asset" );
     }
+
+    #endregion
 }
 
 }

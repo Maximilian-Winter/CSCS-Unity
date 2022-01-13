@@ -1,0 +1,1563 @@
+<?xml version="1.0"?>
+<doc>
+    <assembly>
+        <name>ImmediateReflection</name>
+    </assembly>
+    <members>
+        <member name="T:JetBrains.Annotations.CanBeNullAttribute">
+            <summary>
+            Indicates that the value of the marked element could be <c>null</c> sometimes,
+            so the check for <c>null</c> is necessary before its usage.
+            </summary>
+            <example><code>
+            [CanBeNull] object Test() => null;
+            
+            void UseTest() {
+              var p = Test();
+              var s = p.ToString(); // Warning: Possible 'System.NullReferenceException'
+            }
+            </code></example>
+        </member>
+        <member name="T:JetBrains.Annotations.NotNullAttribute">
+            <summary>
+            Indicates that the value of the marked element could never be <c>null</c>.
+            </summary>
+            <example><code>
+            [NotNull] object Foo() {
+              return null; // Warning: Possible 'null' assignment
+            }
+            </code></example>
+        </member>
+        <member name="T:JetBrains.Annotations.ItemNotNullAttribute">
+            <summary>
+            Can be appplied to symbols of types derived from IEnumerable as well as to symbols of Task
+            and Lazy classes to indicate that the value of a collection item, of the Task.Result property
+            or of the Lazy.Value property can never be null.
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.ItemCanBeNullAttribute">
+            <summary>
+            Can be appplied to symbols of types derived from IEnumerable as well as to symbols of Task
+            and Lazy classes to indicate that the value of a collection item, of the Task.Result property
+            or of the Lazy.Value property can be null.
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.ContractAnnotationAttribute">
+            <summary>
+            Describes dependency between method input and output.
+            </summary>
+            <syntax>
+            <p>Function Definition Table syntax:</p>
+            <list>
+            <item>FDT      ::= FDTRow [;FDTRow]*</item>
+            <item>FDTRow   ::= Input =&gt; Output | Output &lt;= Input</item>
+            <item>Input    ::= ParameterName: Value [, Input]*</item>
+            <item>Output   ::= [ParameterName: Value]* {halt|stop|void|nothing|Value}</item>
+            <item>Value    ::= true | false | null | notnull | canbenull</item>
+            </list>
+            If method has single input parameter, it's name could be omitted.<br/>
+            Using <c>halt</c> (or <c>void</c>/<c>nothing</c>, which is the same) for method output
+            means that the methos doesn't return normally (throws or terminates the process).<br/>
+            Value <c>canbenull</c> is only applicable for output parameters.<br/>
+            You can use multiple <c>[ContractAnnotation]</c> for each FDT row, or use single attribute
+            with rows separated by semicolon. There is no notion of order rows, all rows are checked
+            for applicability and applied per each program state tracked by R# analysis.<br/>
+            </syntax>
+            <examples><list>
+            <item><code>
+            [ContractAnnotation("=&gt; halt")]
+            public void TerminationMethod()
+            </code></item>
+            <item><code>
+            [ContractAnnotation("halt &lt;= condition: false")]
+            public void Assert(bool condition, string text) // regular assertion method
+            </code></item>
+            <item><code>
+            [ContractAnnotation("s:null =&gt; true")]
+            public bool IsNullOrEmpty(string s) // string.IsNullOrEmpty()
+            </code></item>
+            <item><code>
+            // A method that returns null if the parameter is null,
+            // and not null if the parameter is not null
+            [ContractAnnotation("null =&gt; null; notnull =&gt; notnull")]
+            public object Transform(object data) 
+            </code></item>
+            <item><code>
+            [ContractAnnotation("=&gt; true, result: notnull; =&gt; false, result: null")]
+            public bool TryParse(string s, out Person result)
+            </code></item>
+            </list></examples>
+        </member>
+        <member name="T:JetBrains.Annotations.UsedImplicitlyAttribute">
+            <summary>
+            Indicates that the marked symbol is used implicitly (e.g. via reflection, in external library),
+            so this symbol will not be marked as unused (as well as by other usage inspections).
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.MeansImplicitUseAttribute">
+            <summary>
+            Should be used on attributes and causes ReSharper to not mark symbols marked with such attributes
+            as unused (as well as by other usage inspections)
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.Access">
+            <summary>Only entity marked with attribute considered used.</summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.Assign">
+            <summary>Indicates implicit assignment to a member.</summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.InstantiatedWithFixedConstructorSignature">
+            <summary>
+            Indicates implicit instantiation of a type with fixed constructor signature.
+            That means any unused constructor parameters won't be reported as such.
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseKindFlags.InstantiatedNoFixedConstructorSignature">
+            <summary>Indicates implicit instantiation of a type.</summary>
+        </member>
+        <member name="T:JetBrains.Annotations.ImplicitUseTargetFlags">
+            <summary>
+            Specify what is considered used implicitly when marked
+            with <see cref="T:JetBrains.Annotations.MeansImplicitUseAttribute"/> or <see cref="T:JetBrains.Annotations.UsedImplicitlyAttribute"/>.
+            </summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseTargetFlags.Members">
+            <summary>Members of entity marked with attribute are considered used.</summary>
+        </member>
+        <member name="F:JetBrains.Annotations.ImplicitUseTargetFlags.WithMembers">
+            <summary>Entity marked with attribute and all its members considered used.</summary>
+        </member>
+        <member name="T:JetBrains.Annotations.PublicAPIAttribute">
+            <summary>
+            This attribute is intended to mark publicly available API
+            which should not be removed and so is treated as used.
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.InstantHandleAttribute">
+            <summary>
+            Tells code analysis engine if the parameter is completely handled when the invoked method is on stack.
+            If the parameter is a delegate, indicates that delegate is executed while the method is executed.
+            If the parameter is an enumerable, indicates that it is enumerated while the method is executed.
+            </summary>
+        </member>
+        <member name="T:JetBrains.Annotations.PureAttribute">
+            <summary>
+            Indicates that a method does not make any observable state changes.
+            The same as <c>System.Diagnostics.Contracts.PureAttribute</c>.
+            </summary>
+            <example><code>
+            [Pure] int Multiply(int x, int y) => x * y;
+            
+            void M() {
+              Multiply(123, 42); // Waring: Return value of pure method is not used
+            }
+            </code></example>
+        </member>
+        <member name="T:ImmediateReflection.AttributesCache">
+            <summary>
+            Cache storage for attributes.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.IsDefined``1(System.Boolean)">
+            <summary>
+            Check if there is a custom attribute of type <typeparamref name="TAttribute"/>.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>True if an attribute matches requested type, otherwise false.</returns>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.IsDefined(System.Type,System.Boolean)">
+            <summary>
+            Check if there is a custom attribute of type <paramref name="attributeType"/>.
+            </summary>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>True if an attribute matches requested type, otherwise false.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="attributeType"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given <paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/> type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.GetAttribute``1(System.Boolean)">
+            <summary>
+            Retrieves a custom attribute of type <typeparamref name="TAttribute"/>.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>The first attribute matching requested type, otherwise null.</returns>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.GetAttribute(System.Type,System.Boolean)">
+            <summary>
+            Retrieves a custom attribute of type <paramref name="attributeType"/>.
+            </summary>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>The first attribute matching requested type, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="attributeType"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given <paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/> type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.GetAttributes``1(System.Boolean)">
+            <summary>
+            Retrieves custom attributes of type <typeparamref name="TAttribute"/>.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>Attributes matching requested type.</returns>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.GetAttributes(System.Type,System.Boolean)">
+            <summary>
+            Retrieves custom attributes of type <paramref name="attributeType"/>.
+            </summary>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>Attributes matching requested type.</returns>
+        </member>
+        <member name="M:ImmediateReflection.AttributesCache.GetAllAttributes(System.Boolean)">
+            <summary>
+            Retrieves all custom attributes.
+            </summary>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>All attributes.</returns>
+        </member>
+        <member name="T:ImmediateReflection.CachesHandler">
+            <summary>
+            Cache storing all ready to use Immediate Reflection data.
+            </summary>
+            <remarks>This is a singleton implementation.</remarks>
+        </member>
+        <member name="P:ImmediateReflection.CachesHandler.Instance">
+            <summary>
+            Gets the cache instance.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.CachesHandler.TypeCacheKey.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.CachesHandler.TypeCacheKey.Equals(ImmediateReflection.CachesHandler.TypeCacheKey)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.CachesHandler.TypeCacheKey.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.ConstructorData`1">
+            <summary>
+            Data stored in a constructor cache.
+            </summary>
+            <typeparam name="TConstructorDelegate">Constructor delegate type.</typeparam>
+        </member>
+        <member name="P:ImmediateReflection.ConstructorData`1.HasConstructor">
+            <summary>
+            Indicates if there is a constructor.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ConstructorData`1.Constructor">
+            <summary>
+            Constructor delegate.
+            </summary>
+        </member>
+        <member name="T:ImmediateReflection.MemoryCache`2">
+            <summary>
+            Represents a type that implements a memory cache.
+            </summary>
+            <typeparam name="TKey">Cache key type.</typeparam>
+            <typeparam name="TValue">Cache value type.</typeparam>
+        </member>
+        <member name="M:ImmediateReflection.MemoryCache`2.GetOrCreate(`0,System.Func{`1})">
+            <summary>
+            Gets the cached value corresponding to the given <paramref name="key"/> if already cached, or creates
+            a new entry if not available.
+            </summary>
+            <param name="key">Cache key.</param>
+            <param name="valueFactory">Factory method to create the value if it does not exist.</param>
+            <returns>The value.</returns>
+        </member>
+        <member name="T:ImmediateReflection.DefaultConstructorDelegate">
+            <summary>
+            Default constructor delegate.
+            </summary>
+            <returns>Newly created object.</returns>
+        </member>
+        <member name="T:ImmediateReflection.CopyConstructorDelegate">
+            <summary>
+            Copy constructor delegate.
+            </summary>
+            <param name="other">Object to copy.</param>
+            <returns>Newly created object.</returns>
+        </member>
+        <member name="T:ImmediateReflection.ConstructorDelegate">
+            <summary>
+            Constructor delegate.
+            </summary>
+            <param name="arguments">Constructor arguments.</param>
+            <returns>Newly created object.</returns>
+        </member>
+        <member name="T:ImmediateReflection.StaticGetterDelegate`1">
+            <summary>
+            Static getter delegate.
+            </summary>
+            <typeparam name="TValue">Value type.</typeparam>
+            <returns>Got value.</returns>
+        </member>
+        <member name="T:ImmediateReflection.GetterDelegate">
+            <summary>
+            Getter delegate.
+            </summary>
+            <param name="target">Object instance to get a value, null if static.</param>
+            <returns>Got value.</returns>
+        </member>
+        <member name="T:ImmediateReflection.GetterDelegate`1">
+            <summary>
+            Template getter delegate.
+            </summary>
+            <typeparam name="TOwner">Owner object type.</typeparam>
+            <param name="target">Object instance to get a value, null if static.</param>
+            <returns>Got value.</returns>
+        </member>
+        <member name="T:ImmediateReflection.GetterDelegate`2">
+            <summary>
+            Template getter delegate.
+            </summary>
+            <typeparam name="TOwner">Owner object type.</typeparam>
+            <typeparam name="TValue">Value type.</typeparam>
+            <param name="target">Object instance to get a value, null if static.</param>
+            <returns>Got value.</returns>
+        </member>
+        <member name="T:ImmediateReflection.RefGetterDelegate`2">
+            <summary>
+            Template getter delegate (ref).
+            </summary>
+            <typeparam name="TOwner">Owner object type.</typeparam>
+            <typeparam name="TValue">Value type.</typeparam>
+            <param name="target">Object instance to get a value, null if static.</param>
+            <returns>Got value.</returns>
+        </member>
+        <member name="T:ImmediateReflection.StaticSetterDelegate`1">
+            <summary>
+            Static setter delegate.
+            </summary>
+            <typeparam name="TValue">Value type.</typeparam>
+            <param name="value">Value to set.</param>
+        </member>
+        <member name="T:ImmediateReflection.SetterDelegate">
+            <summary>
+            Setter delegate.
+            </summary>
+            <param name="target">Object instance to set a value, null if static.</param>
+            <param name="value">Value to set.</param>
+        </member>
+        <member name="T:ImmediateReflection.SetterDelegate`1">
+            <summary>
+            Template setter delegate.
+            </summary>
+            <typeparam name="TOwner">Owner object type.</typeparam>
+            <param name="target">Object instance to set a value, null if static.</param>
+            <param name="value">Value to set.</param>
+        </member>
+        <member name="T:ImmediateReflection.SetterDelegate`2">
+            <summary>
+            Template setter delegate.
+            </summary>
+            <typeparam name="TOwner">Owner object type.</typeparam>
+            <typeparam name="TValue">Value type.</typeparam>
+            <param name="target">Object instance to set a value, null if static.</param>
+            <param name="value">Value to set.</param>
+        </member>
+        <member name="T:ImmediateReflection.DelegatesFactory">
+            <summary>
+            Factory for delegates created dynamically.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.DelegatesFactory.GetOwnerType(System.Reflection.MemberInfo)">
+            <summary>
+            Gets the <see cref="T:System.Type"/> of the <paramref name="member"/> owner.
+            </summary>
+            <exception cref="T:System.InvalidOperationException">If it's impossible to retrieve the owner <see cref="T:System.Type"/>.</exception>
+        </member>
+        <member name="T:ImmediateReflection.ImmediateAttributesExtensions">
+            <summary>
+            Extensions to easily work with attributes.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.IsDefinedImmediateAttribute``1(System.Reflection.MemberInfo,System.Boolean)">
+            <summary>
+            Check if there is a custom attribute of type <typeparamref name="TAttribute"/>.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>True if an attribute matches requested type, otherwise false.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.IsDefinedImmediateAttribute(System.Reflection.MemberInfo,System.Type,System.Boolean)">
+            <summary>
+            Check if there is a custom attribute of type <paramref name="attributeType"/>.
+            </summary>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>True if an attribute matches requested type, otherwise false.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> is null.</exception>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="attributeType"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given <paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/> type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.GetImmediateAttribute``1(System.Reflection.MemberInfo,System.Boolean)">
+            <summary>
+            Retrieves a custom attribute of type <typeparamref name="TAttribute"/>.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>The first attribute matching requested type, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.GetImmediateAttribute(System.Reflection.MemberInfo,System.Type,System.Boolean)">
+            <summary>
+            Retrieves a custom attribute of type <paramref name="attributeType"/>.
+            </summary>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>The first attribute matching requested type, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> or the <paramref name="attributeType"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given <paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/> type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.GetImmediateAttributes``1(System.Reflection.MemberInfo,System.Boolean)">
+            <summary>
+            Retrieves custom attributes of type <typeparamref name="TAttribute"/>.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>Attributes matching requested type.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.GetImmediateAttributes(System.Reflection.MemberInfo,System.Type,System.Boolean)">
+            <summary>
+            Retrieves custom attributes of type <paramref name="attributeType"/>.
+            </summary>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>Attributes matching requested type.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateAttributesExtensions.GetAllImmediateAttributes(System.Reflection.MemberInfo,System.Boolean)">
+            <summary>
+            Retrieves all custom attributes.
+            </summary>
+            <param name="member">Member to get its custom attributes.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>All attributes.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="member"/> is null.</exception>
+        </member>
+        <member name="T:ImmediateReflection.ImmediateMemberExtensions">
+            <summary>
+            Extensions to easily work with <see cref="T:ImmediateReflection.ImmediateProperty"/>.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateField(System.Type,System.String)">
+            <summary>
+            Searches for the public <see cref="T:ImmediateReflection.ImmediateField"/> corresponding to the given <paramref name="fieldName"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <param name="fieldName">Field name.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.ImmediateField"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> or <paramref name="fieldName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateField(System.Type,System.String,System.Reflection.BindingFlags)">
+            <summary>
+            Searches for the <see cref="T:ImmediateReflection.ImmediateField"/> corresponding to the given <paramref name="fieldName"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <param name="fieldName">Field name.</param>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.ImmediateField"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> or <paramref name="fieldName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateFields(System.Type)">
+            <summary>
+            Gets all the public fields of this <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateField"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateFields(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Gets all the fields of this <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateField"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateProperty(System.Type,System.String)">
+            <summary>
+            Searches for the public <see cref="T:ImmediateReflection.ImmediateProperty"/> corresponding to the given <paramref name="propertyName"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <param name="propertyName">Property name.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> or <paramref name="propertyName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateProperty(System.Type,System.String,System.Reflection.BindingFlags)">
+            <summary>
+            Searches for the <see cref="T:ImmediateReflection.ImmediateProperty"/> corresponding to the given <paramref name="propertyName"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <param name="propertyName">Property name.</param>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> or <paramref name="propertyName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateProperties(System.Type)">
+            <summary>
+            Gets all the public properties of this <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateProperty"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMemberExtensions.GetImmediateProperties(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Gets all the properties of this <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateProperty"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="T:ImmediateReflection.ImmediateReflectionExtensions">
+            <summary>
+            Extensions to easily work with Immediate Reflection.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateReflectionExtensions.GetImmediateType``1(``0)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateType"/> corresponding to this instance.
+            </summary>
+            <typeparam name="T">Object type.</typeparam>
+            <param name="obj">Object instance.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="obj"/>is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateReflectionExtensions.GetImmediateType(System.Type)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateType"/> corresponding to this <see cref="T:System.Type"/>.
+            </summary>
+            <param name="type">A <see cref="T:System.Type"/>.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/>is null.</exception>
+        </member>
+        <member name="T:ImmediateReflection.MemberExtensions">
+            <summary>
+            Extensions to work with <see cref="T:System.Reflection.MemberInfo"/>.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.TryCreateGetter``2(System.Reflection.PropertyInfo,ImmediateReflection.GetterDelegate{``0,``1}@)">
+            <summary>
+            Tries to create a delegate getter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no get method
+            available then it returns false and a null <paramref name="getter"/>.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <typeparam name="TProperty">Property type.</typeparam>
+            <param name="property">Property for which creating a getter.</param>
+            <param name="getter">Created getter delegate.</param>
+            <returns>True if the getter was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.CreateGetter``2(System.Reflection.PropertyInfo)">
+            <summary>
+            Creates a delegate getter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no get method
+            available then it creates a default delegate that returns the default value of <typeparamref name="TProperty"/>.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <typeparam name="TProperty">Property type.</typeparam>
+            <param name="property">Property for which creating a getter.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.GetterDelegate`2"/> delegate getter.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given template type does not match owner and property types.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.TryCreateGetter``1(System.Reflection.PropertyInfo,ImmediateReflection.GetterDelegate{``0}@)">
+            <summary>
+            Tries to create a delegate getter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no get method
+            available then it returns false and a null <paramref name="getter"/>.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <param name="property">Property for which creating a setter.</param>
+            <param name="getter">Created getter delegate.</param>
+            <returns>True if the getter was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.CreateGetter``1(System.Reflection.PropertyInfo)">
+            <summary>
+            Creates a delegate setter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no get method
+            available then it creates a default delegate that returns the default property type value.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <param name="property">Property for which creating a getter.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.GetterDelegate`1"/> delegate getter.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given template type does not match owner type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.TryCreateSetter``2(System.Reflection.PropertyInfo,ImmediateReflection.SetterDelegate{``0,``1}@)">
+            <summary>
+            Tries to create a delegate setter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no set method
+            available then it returns false and a null <paramref name="setter"/>.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <typeparam name="TProperty">Property type.</typeparam>
+            <param name="property">Property for which creating a setter.</param>
+            <param name="setter">Created setter delegate.</param>
+            <returns>True if the setter was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.CreateSetter``2(System.Reflection.PropertyInfo)">
+            <summary>
+            Creates a delegate setter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no set method
+            available then it creates a default delegate that does nothing.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <typeparam name="TProperty">Property type.</typeparam>
+            <param name="property">Property for which creating a setter.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.SetterDelegate`2"/> delegate setter.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given template type does not match owner and property types.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.TryCreateSetter``1(System.Reflection.PropertyInfo,ImmediateReflection.SetterDelegate{``0}@)">
+            <summary>
+            Tries to create a delegate setter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no set method
+            available then it returns false and a null <paramref name="setter"/>.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <param name="property">Property for which creating a setter.</param>
+            <param name="setter">Created setter delegate.</param>
+            <returns>True if the setter was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.MemberExtensions.CreateSetter``1(System.Reflection.PropertyInfo)">
+            <summary>
+            Creates a delegate setter for this <see cref="T:System.Reflection.PropertyInfo"/>, if the property has no set method
+            available then it creates a default delegate that does nothing.
+            </summary>
+            <typeparam name="TOwner">Property owner type.</typeparam>
+            <param name="property">Property for which creating a setter.</param>
+            <returns>The corresponding <see cref="T:ImmediateReflection.SetterDelegate`1"/> delegate setter.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="property"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given template type does not match owner type.</exception>
+        </member>
+        <member name="T:ImmediateReflection.ObjectExtensions">
+            <summary>
+            Extensions to work with object instance.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ObjectExtensions.HasCopyConstructor``1(``0)">
+            <summary>
+            Checks if this <paramref name="instance"/> can be copied by a copy constructor.
+            </summary>
+            <typeparam name="T">Instance type.</typeparam>
+            <param name="instance">Object to check if its <see cref="T:System.Type"/> has a copy constructor.</param>
+            <returns>True if the <paramref name="instance"/> can be copied, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="instance"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectExtensions.Copy``1(``0)">
+            <summary>
+            Creates a copy instance of this <paramref name="instance"/> with its copy constructor.
+            </summary>
+            <typeparam name="T">Instance type.</typeparam>
+            <param name="instance">Object to copy.</param>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="instance"/> is null.</exception>
+            <exception cref="T:System.MissingMethodException">
+            No matching public copy constructor was found,
+            or constructor exists but was not considered as copy constructor.
+            </exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectExtensions.TryCopy``1(``0,``0@,System.Exception@)">
+            <summary>
+            Tries to create a copy instance of this <paramref name="newInstance"/> with its copy constructor.
+            </summary>
+            <typeparam name="T">Instance type.</typeparam>
+            <remarks>This method will not throw if instantiation failed.</remarks>
+            <param name="instance">Object to copy.</param>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="instance"/> is null.</exception>
+        </member>
+        <member name="T:ImmediateReflection.TypeExtensions">
+            <summary>
+            Extensions to work with <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.HasDefaultConstructor(System.Type)">
+            <summary>
+            Checks if this <paramref name="type"/> has a default constructor.
+            </summary>
+            <param name="type"><see cref="T:System.Type"/> to check.</param>
+            <returns>True if the <paramref name="type"/> has a default constructor, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.New(System.Type)">
+            <summary>
+            Creates an instance of this <paramref name="type"/> with that type's default constructor.
+            </summary>
+            <param name="type"><see cref="T:System.Type"/> to instantiate.</param>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentException"><see cref="T:System.Type"/> a RuntimeType or is an open generic type (that is, the ContainsGenericParameters property returns true).</exception>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+            <exception cref="T:System.Reflection.AmbiguousMatchException"><see cref="T:System.Type"/> has several constructors defining "params" parameter only.</exception>
+            <exception cref="T:System.MissingMethodException">No matching public constructor was found.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.TryNew(System.Type,System.Object@,System.Exception@)">
+            <summary>
+            Tries to create an instance of this <paramref name="type"/> with that type's default constructor.
+            </summary>
+            <remarks>This method will not throw if instantiation failed.</remarks>
+            <param name="type"><see cref="T:System.Type"/> to instantiate.</param>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.New(System.Type,System.Object[])">
+            <summary>
+            Creates an instance of this <paramref name="type"/> using the constructor that best matches the specified parameters.
+            </summary>
+            <remarks>It finally uses <see cref="M:System.Activator.CreateInstance(System.Type,System.Object[])"/>.</remarks>
+            <param name="type"><see cref="T:System.Type"/> to instantiate.</param>
+            <param name="args">
+            An array of arguments that match in number, order, and type the parameters of the constructor to invoke.
+            If <paramref name="args"/> is an empty array or null, the constructor that takes no parameters (the default constructor) is invoked.
+            </param>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentException"><see cref="T:System.Type"/> a RuntimeType or is an open generic type (that is, the ContainsGenericParameters property returns true).</exception>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> or <paramref name="args"/> is null.</exception>
+            <exception cref="T:System.MemberAccessException">Cannot create an instance of an abstract class, or this member was invoked with a late-binding mechanism.</exception>
+            <exception cref="T:System.MissingMethodException">No matching public constructor was found.</exception>
+            <exception cref="T:System.NotSupportedException">
+            If the <see cref="T:System.Type"/> cannot be a TypeBuilder.
+            -or- Creation of <see cref="T:System.TypedReference"/>, ArgIterator, <see cref="T:System.Void"/>, and <see cref="T:System.RuntimeArgumentHandle"/> types, or arrays of those types, is not supported.
+            -or- The assembly that contains type is a dynamic assembly that was created with Save.
+            -or- The constructor that best matches args has varargs arguments.
+            </exception>
+            <exception cref="T:System.Reflection.TargetInvocationException">The constructor being called throws an exception.</exception>
+            <exception cref="T:System.TypeLoadException">If the <see cref="T:System.Type"/> is not a valid type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.TryNew(System.Type,System.Object@,System.Exception@,System.Object[])">
+            <summary>
+            Tries to create an instance of this <see cref="T:System.Type"/> with the best matching constructor.
+            </summary>
+            <remarks>
+            This method will not throw if instantiation failed.
+            It finally uses <see cref="M:System.Activator.CreateInstance(System.Type,System.Object[])"/>.
+            </remarks>
+            <param name="type"><see cref="T:System.Type"/> to instantiate.</param>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <param name="args">
+            An array of arguments that match in number, order, and type the parameters of the constructor to invoke.
+            If <paramref name="args"/> is an empty array or null, the constructor that takes no parameters (the default constructor) is invoked.
+            </param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> or <paramref name="args"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.HasCopyConstructor(System.Type)">
+            <summary>
+            Checks if this <paramref name="type"/> has a copy constructor.
+            </summary>
+            <param name="type"><see cref="T:System.Type"/> to check.</param>
+            <returns>True if the <paramref name="type"/> has a copy constructor, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.Copy``1(System.Type,``0)">
+            <summary>
+            Creates a copy instance of <paramref name="other"/> with this <paramref name="type"/>'s copy constructor.
+            </summary>
+            <typeparam name="T">Object type.</typeparam>
+            <param name="type"><see cref="T:System.Type"/> of the object to copy.</param>
+            <param name="other">Object to copy.</param>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentException">
+            <paramref name="type"/> is a RuntimeType or is an open generic type (that is, the ContainsGenericParameters property returns true),
+            or if the <paramref name="other"/> instance is not exactly an instance of <paramref name="type"/>.
+            </exception>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+            <exception cref="T:System.MissingMethodException">
+            No matching public copy constructor was found,
+            or constructor exists but was not considered as copy constructor.
+            </exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeExtensions.TryCopy``1(System.Type,``0,``0@,System.Exception@)">
+            <summary>
+            Tries to create a copy instance of <paramref name="other"/> with this <paramref name="type"/>'s copy constructor.
+            </summary>
+            <remarks>This method will not throw if instantiation failed.</remarks>
+            <typeparam name="T">Object type.</typeparam>
+            <param name="type"><see cref="T:System.Type"/> of the object to copy.</param>
+            <param name="other">Object to copy.</param>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="T:ImmediateReflection.Utils.FieldHelpers">
+            <summary>
+            Helpers to work with fields.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.Utils.FieldHelpers.IsBackingField(System.Reflection.FieldInfo)">
+            <summary>
+            Checks if the given <see cref="T:System.Reflection.FieldInfo"/> corresponds to a backing field.
+            </summary>
+            <param name="field">The <see cref="T:System.Reflection.FieldInfo"/>.</param>
+            <returns>True if the <see cref="T:System.Reflection.FieldInfo"/> is a backing field, false otherwise.</returns>
+        </member>
+        <member name="M:ImmediateReflection.Utils.FieldHelpers.IgnoreBackingFields(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
+            <summary>
+            Gets an enumerable of <see cref="T:System.Reflection.FieldInfo"/> without backing fields.
+            </summary>
+            <param name="fields">Enumerable of <see cref="T:System.Reflection.FieldInfo"/> to filter.</param>
+            <returns>Filtered <see cref="T:System.Reflection.FieldInfo"/>.</returns>
+        </member>
+        <member name="T:ImmediateReflection.Utils.ReflectionHelpers">
+            <summary>
+            Helpers to use C# reflection.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.Utils.ReflectionHelpers.IsParams(System.Reflection.ParameterInfo)">
+            <summary>
+            Checks if the given parameter is a parameter using "params".
+            </summary>
+            <param name="param">A <see cref="T:System.Reflection.ParameterInfo"/>.</param>
+            <returns>True if the parameter correspond to a "params" parameter, false otherwise.</returns>
+        </member>
+        <member name="M:ImmediateReflection.Utils.ReflectionHelpers.IsIndexed(System.Reflection.PropertyInfo)">
+            <summary>
+            Checks if the given <paramref name="property"/> is an indexed one.
+            </summary>
+            <param name="property">A <see cref="T:System.Reflection.PropertyInfo"/>.</param>
+            <returns>True if the <paramref name="property"/> is an indexed property, false otherwise.</returns>
+        </member>
+        <member name="T:ImmediateReflection.ImmediateField">
+            <summary>
+            Represents a field and provides access to its metadata in a faster way.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateField.FieldInfo">
+            <summary>
+            Gets the wrapped <see cref="T:System.Reflection.FieldInfo"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateField.DeclaringType">
+            <summary>
+            Gets the <see cref="T:System.Type"/> owning this field (declaring it).
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateField.FieldType">
+            <summary>
+            Gets the <see cref="T:System.Type"/> of this field.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateField.FieldImmediateType">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateType"/> of this field.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.#ctor(System.Reflection.FieldInfo)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="field"><see cref="T:System.Reflection.FieldInfo"/> to wrap.</param>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.GetValue(System.Object)">
+            <summary>
+            Returns the field value of the specified object.
+            </summary>
+            <param name="obj">Object that field value will be returned.</param>
+            <returns>Field value of the specified object.</returns>
+            <exception cref="T:System.InvalidCastException">If the <paramref name="obj"/> is not the owner of this field.</exception>
+            <exception cref="T:System.Reflection.TargetException">If the given <paramref name="obj"/> is null and the field to get is not static.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.SetValue(System.Object,System.Object)">
+            <summary>
+            Sets the field value of the specified object.
+            </summary>
+            <param name="obj">Object that field value will be set.</param>
+            <param name="value">New field value.</param>
+            <exception cref="T:System.InvalidCastException">If the <paramref name="obj"/> is not the owner of this field or if the <paramref name="value"/> is of the wrong type.</exception>
+            <exception cref="T:System.FieldAccessException">If the field is constant or read only.</exception>
+            <exception cref="T:System.Reflection.TargetException">If the given <paramref name="obj"/> is null and the field to set is not static.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.Equals(ImmediateReflection.ImmediateField)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateField.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.ImmediateFields">
+            <summary>
+            Represents a collection of fields and provides access to its metadata in a faster way.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.#ctor(System.Collections.Generic.IEnumerable{System.Reflection.FieldInfo})">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="fields">Enumerable of <see cref="T:System.Reflection.FieldInfo"/> to wrap.</param>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateFields.Item(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateField"/> corresponding to the given <paramref name="fieldName"/>.
+            </summary>
+            <param name="fieldName">Field name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateField"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="fieldName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.GetField(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateField"/> corresponding to the given <paramref name="fieldName"/>.
+            </summary>
+            <param name="fieldName">Field name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateField"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="fieldName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.Equals(ImmediateReflection.ImmediateFields)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateFields.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.ImmediateMember">
+            <summary>
+            Represents information about the attributes of a member or <see cref="T:System.Type"/> and provides access to its metadata in a faster way.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateMember.Name">
+            <summary>
+            Gets the name of the current member.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.#ctor(System.Reflection.MemberInfo)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="member"><see cref="T:System.Reflection.MemberInfo"/> to wrap.</param>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.IsDefined``1(System.Boolean)">
+            <summary>
+            Check if there is a custom attribute of type <typeparamref name="TAttribute"/> that is applied to this member.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>True if an attribute matches requested type, otherwise false.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.IsDefined(System.Type,System.Boolean)">
+            <summary>
+            Check if there is a custom attribute of type <paramref name="attributeType"/> that is applied to this member.
+            </summary>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>True if an attribute matches requested type, otherwise false.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="attributeType"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given <paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/> type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.GetAttribute``1(System.Boolean)">
+            <summary>
+            Retrieves a custom attribute of type <typeparamref name="TAttribute"/> that is applied to this member.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>The first attribute matching requested type, otherwise null.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.GetAttribute(System.Type,System.Boolean)">
+            <summary>
+            Retrieves a custom attribute of type <paramref name="attributeType"/> that is applied to this member.
+            </summary>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>The first attribute matching requested type, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="attributeType"/> is null.</exception>
+            <exception cref="T:System.ArgumentException">If the given <paramref name="attributeType"/> is not an <see cref="T:System.Attribute"/> type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.GetAttributes``1(System.Boolean)">
+            <summary>
+            Retrieves custom attributes of type <typeparamref name="TAttribute"/> that are applied to this member.
+            </summary>
+            <typeparam name="TAttribute">Attribute type.</typeparam>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>Attributes matching requested type.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.GetAttributes(System.Type,System.Boolean)">
+            <summary>
+            Retrieves custom attributes of type <paramref name="attributeType"/> that are applied to this member.
+            </summary>
+            <param name="attributeType">Type of the attribute to search.</param>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>Attributes matching requested type.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateMember.GetAllAttributes(System.Boolean)">
+            <summary>
+            Retrieves all custom attributes that are applied to this member.
+            </summary>
+            <param name="inherit">Indicates if inherited attributes should be taken into account.</param>
+            <returns>All attributes.</returns>
+        </member>
+        <member name="T:ImmediateReflection.ImmediateProperties">
+            <summary>
+            Represents a collection of properties and provides access to property metadata in a faster way.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.#ctor(System.Collections.Generic.IEnumerable{System.Reflection.PropertyInfo})">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="properties">Enumerable of <see cref="T:System.Reflection.PropertyInfo"/> to wrap.</param>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperties.Item(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateProperty"/> corresponding to the given <paramref name="propertyName"/>.
+            </summary>
+            <param name="propertyName">Property name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="propertyName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.GetProperty(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateProperty"/> corresponding to the given <paramref name="propertyName"/>.
+            </summary>
+            <param name="propertyName">Property name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="propertyName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.Equals(ImmediateReflection.ImmediateProperties)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.System#Collections#IEnumerable#GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.GetEnumerator">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperties.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.ImmediateProperty">
+            <summary>
+            Represents a property and provides access to property metadata in a faster way.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperty.PropertyInfo">
+            <summary>
+            Gets the wrapped <see cref="T:System.Reflection.PropertyInfo"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperty.DeclaringType">
+            <summary>
+            Gets the <see cref="T:System.Type"/> owning this property (declaring it).
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperty.PropertyType">
+            <summary>
+            Gets the <see cref="T:System.Type"/> of this property.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperty.PropertyImmediateType">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateType"/> of this property.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperty.CanRead">
+            <summary>
+            Gets the readable state of this property.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateProperty.CanWrite">
+            <summary>
+            Gets the writable state of this property.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.#ctor(System.Reflection.PropertyInfo)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="property"><see cref="T:System.Reflection.PropertyInfo"/> to wrap.</param>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.GetValue(System.Object)">
+            <summary>
+            Returns the property value of the specified object.
+            </summary>
+            <param name="obj">Object that property value will be returned.</param>
+            <returns>Property value of the specified object.</returns>
+            <exception cref="T:System.ArgumentException">If this property has no getter.</exception>
+            <exception cref="T:System.InvalidCastException">If the <paramref name="obj"/> is not the owner of this property.</exception>
+            <exception cref="T:System.Reflection.TargetException">If the given <paramref name="obj"/> is null and the property to get is not static.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.SetValue(System.Object,System.Object)">
+            <summary>
+            Sets the property value of the specified object.
+            </summary>
+            <param name="obj">Object that property value will be set.</param>
+            <param name="value">New property value.</param>
+            <exception cref="T:System.ArgumentException">If this property has no setter.</exception>
+            <exception cref="T:System.InvalidCastException">If the <paramref name="obj"/> is not the owner of this property or if the <paramref name="value"/> is of the wrong type.</exception>
+            <exception cref="T:System.Reflection.TargetException">If the given <paramref name="obj"/> is null and the property to set is not static.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.Equals(ImmediateReflection.ImmediateProperty)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateProperty.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.ImmediateType">
+            <summary>
+            Represents type declarations (class types, interface types, array types, value types, enumeration types,
+            type parameters, generic type definitions, and open or closed constructed generic types) in a faster way.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.Type">
+            <summary>
+            Gets the wrapped <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.BaseType">
+            <summary>
+            Gets the base <see cref="T:System.Type"/> of this <see cref="P:ImmediateReflection.ImmediateType.Type"/>.
+            If this is an interface or has no base class null is returned.
+            <see cref="T:System.Object"/> is the only <see cref="T:System.Type"/> that does not have a base class.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.DeclaringType">
+            <summary>
+            Gets the <see cref="T:System.Type"/> owning this <see cref="T:System.Type"/> (declaring it).
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.FullName">
+            <summary>
+            Gets the fully qualified name of the <see cref="T:System.Type"/>, including its namespace but not its assembly.
+            </summary>
+            <remarks>Fallback on the type name if full name is null.</remarks>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.Members">
+            <summary>
+            Gets all the members of this <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.Fields">
+            <summary>
+            Gets all the fields of this <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.Properties">
+            <summary>
+            Gets all the properties of this <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.#ctor(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="type"><see cref="T:System.Type"/> to wrap.</param>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetMembers">
+            <summary>
+            Gets all the members of this <see cref="T:System.Type"/>.
+            </summary>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateMember"/>.</returns>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.Item(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateMember"/> corresponding to the given <paramref name="memberName"/>.
+            </summary>
+            <param name="memberName">Member name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateMember"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="memberName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetMember(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateMember"/> corresponding to the given <paramref name="memberName"/>.
+            </summary>
+            <param name="memberName">Member name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateMember"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="memberName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetFields">
+            <summary>
+            Gets all the fields of this <see cref="T:System.Type"/>.
+            </summary>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateField"/>.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetField(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateField"/> corresponding to the given <paramref name="fieldName"/>.
+            </summary>
+            <param name="fieldName">Property name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="fieldName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetProperties">
+            <summary>
+            Gets all the properties of this <see cref="T:System.Type"/>.
+            </summary>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateProperty"/>.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetProperty(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateProperty"/> corresponding to the given <paramref name="propertyName"/>.
+            </summary>
+            <param name="propertyName">Property name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="propertyName"/> is null.</exception>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.HasDefaultConstructor">
+            <summary>
+            Indicates if this <see cref="P:ImmediateReflection.ImmediateType.Type"/> has a default constructor.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.New">
+            <summary>
+            Creates an instance of this <see cref="P:ImmediateReflection.ImmediateType.Type"/> with that type's default constructor.
+            </summary>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentException"><see cref="P:ImmediateReflection.ImmediateType.Type"/> is a RuntimeType or is an open generic type (that is, the ContainsGenericParameters property returns true).</exception>
+            <exception cref="T:System.Reflection.AmbiguousMatchException"><see cref="P:ImmediateReflection.ImmediateType.Type"/> has several constructors defining "params" parameter only.</exception>
+            <exception cref="T:System.MissingMethodException">No matching public constructor was found.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.TryNew(System.Object@,System.Exception@)">
+            <summary>
+            Tries to create an instance of this <see cref="P:ImmediateReflection.ImmediateType.Type"/> with that type's default constructor.
+            </summary>
+            <remarks>This method will not throw if instantiation failed.</remarks>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.New(System.Object[])">
+            <summary>
+            Creates an instance of this <see cref="P:ImmediateReflection.ImmediateType.Type"/> using the constructor that best matches the specified parameters.
+            </summary>
+            <remarks>Tries to use the <see cref="M:ImmediateReflection.ImmediateType.New"/> if no parameter provided, otherwise fallback on <see cref="M:System.Activator.CreateInstance(System.Type,System.Object[])"/>.</remarks>
+            <param name="args">
+            An array of arguments that match in number, order, and type the parameters of the constructor to invoke.
+            If <paramref name="args"/> is an empty array or null, the constructor that takes no parameters (the default constructor) is invoked.
+            </param>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentException"><see cref="P:ImmediateReflection.ImmediateType.Type"/> is a RuntimeType or is an open generic type (that is, the ContainsGenericParameters property returns true).</exception>
+            <exception cref="T:System.MemberAccessException">Cannot create an instance of an abstract class, or this member was invoked with a late-binding mechanism.</exception>
+            <exception cref="T:System.MissingMethodException">No matching public constructor was found.</exception>
+            <exception cref="T:System.NotSupportedException">
+            If the <see cref="P:ImmediateReflection.ImmediateType.Type"/> cannot be a TypeBuilder.
+            -or- Creation of <see cref="T:System.TypedReference"/>, ArgIterator, <see cref="T:System.Void"/>, and <see cref="T:System.RuntimeArgumentHandle"/> types, or arrays of those types, is not supported.
+            -or- The assembly that contains type is a dynamic assembly that was created with Save.
+            -or- The constructor that best matches args has varargs arguments.
+            </exception>
+            <exception cref="T:System.Reflection.TargetInvocationException">The constructor being called throws an exception.</exception>
+            <exception cref="T:System.TypeLoadException">If the <see cref="P:ImmediateReflection.ImmediateType.Type"/> is not a valid type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.TryNew(System.Object@,System.Exception@,System.Object[])">
+            <summary>
+            Tries to create an instance of this <see cref="P:ImmediateReflection.ImmediateType.Type"/> with the best matching constructor.
+            </summary>
+            <remarks>
+            This method will not throw if instantiation failed.
+            Tries to use the <see cref="M:ImmediateReflection.ImmediateType.New"/> if no parameter provided, otherwise fallback on <see cref="M:System.Activator.CreateInstance(System.Type,System.Object[])"/>.
+            </remarks>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <param name="args">
+            An array of arguments that match in number, order, and type the parameters of the constructor to invoke.
+            If <paramref name="args"/> is an empty array or null, the constructor that takes no parameters (the default constructor) is invoked.
+            </param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+        </member>
+        <member name="P:ImmediateReflection.ImmediateType.HasCopyConstructor">
+            <summary>
+            Indicates if this <see cref="P:ImmediateReflection.ImmediateType.Type"/> has a copy constructor.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.Copy(System.Object)">
+            <summary>
+            Creates a copy instance of <paramref name="other"/> with this <see cref="P:ImmediateReflection.ImmediateType.Type"/>'s copy constructor.
+            </summary>
+            <param name="other">Object to copy.</param>
+            <returns>A reference to the newly created object.</returns>
+            <exception cref="T:System.ArgumentException">
+            <see cref="P:ImmediateReflection.ImmediateType.Type"/> is a RuntimeType or is an open generic type (that is, the ContainsGenericParameters property returns true),
+            or if the <paramref name="other"/> instance is not exactly an instance of <see cref="P:ImmediateReflection.ImmediateType.Type"/>.
+            </exception>
+            <exception cref="T:System.MissingMethodException">
+            No matching public copy constructor was found,
+            or constructor exists but was not considered as copy constructor.
+            </exception>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.TryCopy(System.Object,System.Object@,System.Exception@)">
+            <summary>
+            Tries to create a copy instance of <paramref name="other"/> with this <see cref="P:ImmediateReflection.ImmediateType.Type"/>'s copy constructor.
+            </summary>
+            <remarks>This method will not throw if instantiation failed.</remarks>
+            <param name="other">Object to copy.</param>
+            <param name="newInstance">A reference to the newly created object, otherwise null.</param>
+            <param name="exception">Caught exception if the instantiation failed, otherwise null.</param>
+            <returns>True if the new instance was successfully created, false otherwise.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.Equals(ImmediateReflection.ImmediateType)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.GetObjectData(System.Runtime.Serialization.SerializationInfo,System.Runtime.Serialization.StreamingContext)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ImmediateType.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.ObjectWrapper">
+            <summary>
+            Provides a wrapper over an <see cref="T:System.Object"/> that gives access to its Reflection features in a faster way than standard stuff.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.Object">
+            <summary>
+            Gets the wrapped object.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.Type">
+            <summary>
+            Gets the wrapped object <see cref="T:System.Type"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.ImmediateType">
+            <summary>
+            Gets the wrapped object corresponding <see cref="P:ImmediateReflection.ObjectWrapper.ImmediateType"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.Members">
+            <summary>
+            Gets all the members of this <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.Fields">
+            <summary>
+            Gets all the fields of this <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.Properties">
+            <summary>
+            Gets all the properties of this <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.#ctor(System.Object)">
+            <summary>
+            Constructor.
+            </summary>
+            <param name="obj">Object to wrap.</param>
+            <exception cref="T:System.ArgumentNullException">If the <paramref name="obj"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetMembers">
+            <summary>
+            Gets all the members of this <see cref="T:System.Type"/>.
+            </summary>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateMember"/>.</returns>
+        </member>
+        <member name="P:ImmediateReflection.ObjectWrapper.Item(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateMember"/> corresponding to the given <paramref name="memberName"/>.
+            </summary>
+            <param name="memberName">Member name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateMember"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="memberName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetMember(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateMember"/> corresponding to the given <paramref name="memberName"/>.
+            </summary>
+            <param name="memberName">Member name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateMember"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="memberName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetFields">
+            <summary>
+            Gets all the fields of this <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateField"/>.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetField(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateField"/> corresponding to the given <paramref name="fieldName"/>.
+            </summary>
+            <param name="fieldName">Property name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="fieldName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetFieldValue(System.String)">
+            <summary>
+            Returns the field value of the wrapped <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+            <param name="fieldName">Field name.</param>
+            <returns>
+            Field value of the <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            It can also returns null if there is no field corresponding to <paramref name="fieldName"/> in the object.
+            </returns>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.SetFieldValue(System.String,System.Object)">
+            <summary>
+            Sets the field value of the wrapped <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+            <remarks>It will set nothing if there is no field corresponding to <paramref name="fieldName"/> in the object.</remarks>
+            <param name="fieldName">Field name.</param>
+            <param name="value">New field value.</param>
+            <exception cref="T:System.InvalidCastException">If the <paramref name="value"/> is of the wrong type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetProperties">
+            <summary>
+            Gets all the properties of this <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+            <returns>All <see cref="T:ImmediateReflection.ImmediateProperty"/>.</returns>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetProperty(System.String)">
+            <summary>
+            Gets the <see cref="T:ImmediateReflection.ImmediateProperty"/> corresponding to the given <paramref name="propertyName"/>.
+            </summary>
+            <param name="propertyName">Property name.</param>
+            <returns>Found <see cref="T:ImmediateReflection.ImmediateProperty"/>, otherwise null.</returns>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="propertyName"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetPropertyValue(System.String)">
+            <summary>
+            Returns the property value of the wrapped <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+            <param name="propertyName">Property name.</param>
+            <returns>
+            Property value of the <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            It can also returns null if there is no property corresponding to <paramref name="propertyName"/> in the object.
+            </returns>
+            <exception cref="T:System.ArgumentException">If this property has no getter.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.SetPropertyValue(System.String,System.Object)">
+            <summary>
+            Sets the property value of the wrapped <see cref="P:ImmediateReflection.ObjectWrapper.Object"/>.
+            </summary>
+            <remarks>It will set nothing if there is no property corresponding to <paramref name="propertyName"/> in the object.</remarks>
+            <param name="propertyName">Property name.</param>
+            <param name="value">New property value.</param>
+            <exception cref="T:System.ArgumentException">If this property has no setter.</exception>
+            <exception cref="T:System.InvalidCastException">If the <paramref name="value"/> is of the wrong type.</exception>
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.Equals(System.Object)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.Equals(ImmediateReflection.ObjectWrapper)">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.GetHashCode">
+            <inheritdoc />
+        </member>
+        <member name="M:ImmediateReflection.ObjectWrapper.ToString">
+            <inheritdoc />
+        </member>
+        <member name="T:ImmediateReflection.TypeAccessor">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            <see cref="T:ImmediateReflection.ImmediateType"/> gives access to Reflection features in a faster way than standard stuff.
+            </summary>
+        </member>
+        <member name="M:ImmediateReflection.TypeAccessor.Get``1">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            It gives access to all public instance members.
+            </summary>
+            <remarks>Returned <see cref="T:ImmediateReflection.ImmediateType"/> is cached within the library.</remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> to get a corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</typeparam>
+        </member>
+        <member name="M:ImmediateReflection.TypeAccessor.Get(System.Type)">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            It gives access to all public instance members.
+            </summary>
+            <remarks>Returned <see cref="T:ImmediateReflection.ImmediateType"/> is cached within the library.</remarks>
+            <param name="type"><see cref="T:System.Type"/> to get a corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</param>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeAccessor.Get``1(System.Boolean)">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            If <paramref name="includeNonPublicMembers"/> is set to true it gives access to all public and not public instance members.
+            </summary>
+            <remarks>Returned <see cref="T:ImmediateReflection.ImmediateType"/> is cached within the library.</remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> to get a corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</typeparam>
+            <param name="includeNonPublicMembers">Indicates if non public members should be taken into account.</param>
+        </member>
+        <member name="M:ImmediateReflection.TypeAccessor.Get(System.Type,System.Boolean)">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            If <paramref name="includeNonPublicMembers"/> is set to true it gives access to all public and not public instance members.
+            </summary>
+            <remarks>Returned <see cref="T:ImmediateReflection.ImmediateType"/> is cached within the library.</remarks>
+            <param name="type"><see cref="T:System.Type"/> to get a corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</param>
+            <param name="includeNonPublicMembers">Indicates if non public members should be taken into account.</param>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+        <member name="M:ImmediateReflection.TypeAccessor.Get``1(System.Reflection.BindingFlags)">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            </summary>
+            <remarks>Returned <see cref="T:ImmediateReflection.ImmediateType"/> is cached within the library.</remarks>
+            <typeparam name="T"><see cref="T:System.Type"/> to get a corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</typeparam>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+        </member>
+        <member name="M:ImmediateReflection.TypeAccessor.Get(System.Type,System.Reflection.BindingFlags)">
+            <summary>
+            Provides an access to a <see cref="T:System.Type"/> Reflection information via an <see cref="T:ImmediateReflection.ImmediateType"/>.
+            </summary>
+            <remarks>Returned <see cref="T:ImmediateReflection.ImmediateType"/> is cached within the library.</remarks>
+            <param name="type"><see cref="T:System.Type"/> to get a corresponding <see cref="T:ImmediateReflection.ImmediateType"/>.</param>
+            <param name="flags">Flags that must be taken into account to get members.</param>
+            <exception cref="T:System.ArgumentNullException">If the given <paramref name="type"/> is null.</exception>
+        </member>
+    </members>
+</doc>

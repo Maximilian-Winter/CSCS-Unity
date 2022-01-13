@@ -12,6 +12,5 @@ namespace CSCS
         {
             MessageBus.PublishMessage(new WelcomeMessage(), this);
         }
-        public Type MessageBusSenderType { get => typeof(CscsUnityEntity); }
     }
 }

@@ -1,34 +1,37 @@
 ﻿using System.Collections.Generic;
 using OdinSerializer;
-using UnityEngine;
 
-public class VariableEvent<T> : SerializedScriptableObject
+namespace ScriptableObjects.ScriptableArchitecture.Framework
 {
-    private List<VariableEventListener<T>> listeners =
-        new List<VariableEventListener<T>>();
 
+public class VariableEvent < T > : SerializedScriptableObject
+{
     private int listenerCounter = 0;
 
-    public int ListenerCounter
+    private List < VariableEventListener < T > > listeners =
+        new List < VariableEventListener < T > >();
+
+    public int ListenerCounter => listenerCounter;
+
+    public void Raise( T variableEvent )
     {
-        get => listenerCounter;
+        for ( int i = listeners.Count - 1; i >= 0; i-- )
+        {
+            listeners[i].OnEventRaised( variableEvent );
+        }
     }
 
-    public void Raise(T variableEvent)
+    public void RegisterListener( VariableEventListener < T > listener )
     {
-        for (int i = listeners.Count - 1; i >= 0; i--)
-            listeners[i].OnEventRaised(variableEvent);
-    }
-
-    public void RegisterListener(VariableEventListener<T> listener)
-    {
-        listeners.Add(listener);
+        listeners.Add( listener );
         listenerCounter = listeners.Count;
     }
 
-    public void UnregisterListener(VariableEventListener<T> listener)
+    public void UnregisterListener( VariableEventListener < T > listener )
     {
-        listeners.Remove(listener);
+        listeners.Remove( listener );
         listenerCounter = listeners.Count;
     }
+}
+
 }

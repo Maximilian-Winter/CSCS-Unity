@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace SplitAndMerge
 {
-    public class Variable: IMessageBusRecipient
+    public class Variable
     { 
         public enum VarType
         {
@@ -19,8 +19,7 @@ namespace SplitAndMerge
             ARRAY_NUM, ARRAY_STR, MAP_NUM, MAP_STR, BYTE_ARRAY,
             BREAK, CONTINUE, OBJECT, ENUM, VARIABLE, DATETIME, CUSTOM, POINTER
         };
-
-        public Dictionary<string, List<string>> MessageTypesToCallbackFunctions = new Dictionary<string, List<string>>();
+        
 
         public Variable()
         {
@@ -120,18 +119,7 @@ namespace SplitAndMerge
             //newVar.Copy(this);
             Variable newVar = EmptyInstance;
             
-            if ( this.Object is ScriptObject )
-            {
-                newVar = new Variable( Object as ScriptObject );
-            }
-            else
-            {
-                newVar = (Variable)this.MemberwiseClone();
-            }
-
-            newVar.MessageTypesToCallbackFunctions = new Dictionary<string, List<string>>(MessageTypesToCallbackFunctions) ;
-
-
+            newVar = (Variable)this.MemberwiseClone();
 
             if (m_tuple != null)
             {
@@ -157,22 +145,6 @@ namespace SplitAndMerge
             return new Variable();
         }
         
-        public void ReceiveMessage<T>(T message) where T : Message
-        {
-            string body = "";
-            
-            if (MessageTypesToCallbackFunctions.ContainsKey(message.GetType().Name))
-            {
-                List<string> callbackFunctions = MessageTypesToCallbackFunctions[message.GetType().Name];
-                foreach (string callbackFunction in callbackFunctions)
-                {
-                    body += $"{callbackFunction}.ReceiveMessage();\n";
-                }
-                CscsScriptingController.AddScriptToQueue(body);
-            }
-
-        }
-
         public static Variable ConvertToVariable(object obj)
         {
             if (obj == null)

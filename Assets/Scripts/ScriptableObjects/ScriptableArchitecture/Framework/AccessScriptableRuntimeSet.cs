@@ -4,46 +4,49 @@ using UnityEngine;
 
 namespace ScriptableObjects.ScriptableArchitecture.Framework
 {
-    public class AccessScriptableRuntimeSet  <T, V> : SerializedMonoBehaviour  where T : RuntimeSet<V>
+
+public class AccessScriptableRuntimeSet < T, V > : SerializedMonoBehaviour where T : RuntimeSet < V >
+{
+    public T ScriptableRuntimeSet;
+    public bool InstantiateLocalRuntimeSetOnEnable;
+    public bool CopyRuntimeSetObjectsToLocalRuntimeSetOnEnable;
+    public bool IsInitialized = false;
+
+    protected virtual void OnEnable()
     {
-        public T ScriptableRuntimeSet;
-        public bool InstantiateLocalRuntimeSetOnEnable;
-        public bool CopyRuntimeSetObjectsToLocalRuntimeSetOnEnable;
-        public bool IsInitialized = false;
-        protected virtual void OnEnable()
+        if ( InstantiateLocalRuntimeSetOnEnable && IsInitialized == false )
         {
-            if (InstantiateLocalRuntimeSetOnEnable && IsInitialized == false)
+            if ( CopyRuntimeSetObjectsToLocalRuntimeSetOnEnable )
             {
-                if ( CopyRuntimeSetObjectsToLocalRuntimeSetOnEnable )
-                {
-                    List<V> oldRuntimeSet = new List < V >();
-                    ScriptableRuntimeSet.CopyTo( oldRuntimeSet );
-                    ScriptableRuntimeSet = ScriptableObject.CreateInstance<T>();
-                    ScriptableRuntimeSet.Items = new List < V >();
-                    ScriptableRuntimeSet.Items = oldRuntimeSet;
-                }
-                else
-                {
-                    ScriptableRuntimeSet = ScriptableObject.CreateInstance<T>();
-                }
+                List < V > oldRuntimeSet = new List < V >();
+                ScriptableRuntimeSet.CopyTo( oldRuntimeSet );
+                ScriptableRuntimeSet = ScriptableObject.CreateInstance < T >();
+                ScriptableRuntimeSet.Items = new List < V >();
+                ScriptableRuntimeSet.Items = oldRuntimeSet;
             }
-
-            IsInitialized = true;
+            else
+            {
+                ScriptableRuntimeSet = ScriptableObject.CreateInstance < T >();
+            }
         }
 
-        public void AddObject(V go)
-        {
-            ScriptableRuntimeSet.Items.Add(go);
-        }
-    
-        public void RemoveObject(V go)
-        {
-            ScriptableRuntimeSet.Items.Remove(go);
-        }
-    
-        public List<V> GetAllObjects()
-        {
-            return ScriptableRuntimeSet.Items;
-        }
+        IsInitialized = true;
     }
+
+    public void AddObject( V go )
+    {
+        ScriptableRuntimeSet.Items.Add( go );
+    }
+
+    public void RemoveObject( V go )
+    {
+        ScriptableRuntimeSet.Items.Remove( go );
+    }
+
+    public List < V > GetAllObjects()
+    {
+        return ScriptableRuntimeSet.Items;
+    }
+}
+
 }

@@ -1,17 +1,23 @@
-﻿using System.Collections.Generic;
-
-namespace Utility
+﻿namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility
 {
 
-public class GenericValueWrapper<T>
+public class GenericValueWrapper < T >
 {
     public T Value { get; set; }
-    public GenericValueWrapper(T value) { this.Value = value; }
-    
+
+    #region Public
+
+    public GenericValueWrapper( T value )
+    {
+        Value = value;
+    }
+
     public override string ToString()
     {
         return $"{nameof( Value )}: {Value}";
     }
+
+    #endregion
 }
 
 }

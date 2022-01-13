@@ -1,27 +1,32 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-namespace TerrainCustomTools
+namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility
 {
 
 public static class TerrainUtility
 {
-    public static Terrain GetClosestTerrain(Vector3 worldPos)
+    #region Public
+
+    public static Terrain GetClosestTerrain( Vector3 worldPos )
     {
         Terrain[] terrains = Terrain.activeTerrains;
 
-        if (terrains.Length == 0)
+        if ( terrains.Length == 0 )
+        {
             return null;
-        
-        if (terrains.Length == 1)
+        }
+
+        if ( terrains.Length == 1 )
+        {
             return terrains[0];
-        
-        for (int i = 0; i < terrains.Length; i++)
-        { 
+        }
+
+        for ( int i = 0; i < terrains.Length; i++ )
+        {
             Terrain terrain = terrains[i];
             Bounds terrainBounds = terrain.terrainData.bounds;
             Vector3 terrainWorldPosition = terrain.transform.position;
+
             if ( worldPos.x >= terrainBounds.min.x + terrainWorldPosition.x )
             {
                 if ( worldPos.x <= terrainBounds.max.x + terrainWorldPosition.x )
@@ -36,9 +41,11 @@ public static class TerrainUtility
                 }
             }
         }
-        
+
         return null;
     }
+
+    #endregion
 }
 
 }

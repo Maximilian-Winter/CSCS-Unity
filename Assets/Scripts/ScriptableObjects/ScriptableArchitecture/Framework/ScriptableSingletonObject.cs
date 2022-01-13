@@ -13,17 +13,20 @@ public class ScriptableSingletonObject < T > : ScriptableBase where T : Scriptab
         {
             if ( s_Instance == null )
             {
-                T[] singeltons =  Resources.FindObjectsOfTypeAll < T >(  );
+                T[] singeltons = Resources.FindObjectsOfTypeAll < T >();
 
                 if ( singeltons.Length == 0 )
                 {
-                    Debug.LogErrorFormat( "Scriptable Singleton Error! No instance of Type {0} found!", typeof(T).Name );
-                    
+                    Debug.LogErrorFormat(
+                        "Scriptable Singleton Error! No instance of Type {0} found!",
+                        typeof( T ).Name );
                 }
                 else if ( singeltons.Length > 1 )
                 {
-                    Debug.LogErrorFormat( "Scriptable Singleton Error! More than one instance of Type {0} found!", typeof(T).Name );
-                    
+                    Debug.LogErrorFormat(
+                        "Scriptable Singleton Error! More than one instance of Type {0} found!",
+                        typeof( T ).Name );
+
                     s_Instance = singeltons[0];
                     s_Instance.hideFlags = HideFlags.DontUnloadUnusedAsset;
                     ( s_Instance as ScriptableSingletonObject < T > ).InitializeSingleton();

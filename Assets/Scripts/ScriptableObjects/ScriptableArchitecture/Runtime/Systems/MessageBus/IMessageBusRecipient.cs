@@ -6,7 +6,7 @@ namespace ScriptableObjects.ScriptableArchitecture.Systems.MessageBus
 {
 public interface IMessageBusRecipient
 {
-    public void ReceiveMessage < T >( T message ) where T : Message;
+    public void ReceiveMessage < T >( T message ) where T : IMessage;
 }
 
 }

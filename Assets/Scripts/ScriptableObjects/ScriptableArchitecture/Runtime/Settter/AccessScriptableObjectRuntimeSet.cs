@@ -4,7 +4,6 @@ using OdinSerializer;
 using ScriptableObjects.ScriptableArchitecture.Framework;
 using ScriptableVariablesAndReferences;
 using UnityEngine;
-using Utility;
 
 namespace ScriptableObjects.ScriptableArchitecture.Settter
 {

@@ -2,12 +2,13 @@
 using System.Threading;
 using System.Threading.Tasks;
 using CSCS;
+using ScriptableObjects.ScriptableArchitecture.Systems.MessageBus;
 using SplitAndMerge;
 
 namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
 {
 
-public class MessageQueue : Queue<Message>, ScriptObject
+public class CscsMessageQueueObject : Queue<IMessage>, ScriptObject
 {
     private static readonly List<string> s_properties = new()
     {

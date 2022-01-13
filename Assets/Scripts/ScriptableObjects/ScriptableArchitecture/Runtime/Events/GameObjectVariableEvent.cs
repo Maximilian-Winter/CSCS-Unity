@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using ScriptableObjects.ScriptableArchitecture.Framework;
+using UnityEngine;
 
 namespace ScriptableVariablesAndReferences
 {

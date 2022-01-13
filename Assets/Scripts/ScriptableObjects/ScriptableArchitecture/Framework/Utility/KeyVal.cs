@@ -1,18 +1,25 @@
-﻿namespace Utility
+﻿namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility
 {
 
-public class KeyVal<Key, Val>
+public class KeyVal < Key, Val >
 {
     public Key Id { get; set; }
+
     public Val Value { get; set; }
 
-    public KeyVal() { }
+    #region Public
 
-    public KeyVal(Key key, Val val)
+    public KeyVal()
     {
-        this.Id = key;
-        this.Value = val;
     }
+
+    public KeyVal( Key key, Val val )
+    {
+        Id = key;
+        Value = val;
+    }
+
+    #endregion
 }
 
 }

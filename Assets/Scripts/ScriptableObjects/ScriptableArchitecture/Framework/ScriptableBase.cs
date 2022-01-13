@@ -1,18 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using OdinSerializer;
-using SplitAndMerge;
-using UnityEngine;
-using Utility;
+﻿using OdinSerializer;
+using ScriptableObjects.ScriptableArchitecture.Framework.Utility;
 
 namespace ScriptableObjects.ScriptableArchitecture.Framework
 {
-
-[Serializable]
-public class ScriptableData
-{
-}
 
 public class ScriptableBase : SerializedScriptableObject
 

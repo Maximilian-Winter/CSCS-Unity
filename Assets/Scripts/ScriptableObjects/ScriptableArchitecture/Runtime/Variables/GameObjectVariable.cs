@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using ScriptableObjects.ScriptableArchitecture.Framework;
 using UnityEngine;
 
 namespace ScriptableVariablesAndReferences

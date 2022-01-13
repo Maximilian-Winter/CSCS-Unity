@@ -1,16 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-[CustomPropertyDrawer(typeof(LayerAttribute))]
-class LayerAttributeEditor : PropertyDrawer
+namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility.Editor
 {
 
-    public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+[CustomPropertyDrawer( typeof( LayerAttribute ) )]
+internal class LayerAttributeEditor : PropertyDrawer
+{
+    #region Unity Event Functions
+
+    public override void OnGUI( Rect position, SerializedProperty property, GUIContent label )
     {
-        EditorGUI.BeginProperty(position, label, property);
-        property.intValue = EditorGUI.LayerField(position, label, property.intValue);
+        EditorGUI.BeginProperty( position, label, property );
+        property.intValue = EditorGUI.LayerField( position, label, property.intValue );
         EditorGUI.EndProperty();
     }
+
+    #endregion
+}
+
 }

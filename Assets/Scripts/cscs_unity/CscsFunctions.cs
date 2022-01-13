@@ -12,11 +12,11 @@ public class CscsFunctions
 {
     #region Public
 
-    public static void DefineScriptFunctions( GameObject unityEntityPrefab )
+    public static void DefineScriptFunctions(GameObject UnityCscsObjectPrefab)
     {
         ParserFunction.RegisterFunction(
-            "CreateGameApiProxyObject",
-            new CreateGameApiProxyObjectFunction( unityEntityPrefab ) );
+            "CreateGameApiObject",
+            new CreateGameApiObjectFunction() );
 
         ParserFunction.RegisterFunction( "DebugLog", new DebugLogFunction() );
         ParserFunction.RegisterFunction( "InvokeNative", new InvokeNativeFunction() );
@@ -27,19 +27,6 @@ public class CscsFunctions
     }
 
     #endregion
-}
-
-namespace Unity
-{
-
-public enum GameObjectProxyType
-{
-    New,
-    Existing,
-    Copy,
-    DeepCopy
-}
-
 }
 
 internal class DebugLogFunction : ParserFunction
@@ -88,24 +75,13 @@ public class ThisFunction : ActionFunction
     #endregion
 }
 
-public class CreateGameApiProxyObjectFunction : ParserFunction
+public class CreateGameApiObjectFunction : ParserFunction
 {
-    private GameObject UnityEntityPrefab;
-
-    #region Public
-
-    public CreateGameApiProxyObjectFunction( GameObject unityEntityPrefab ) : base()
-    {
-        UnityEntityPrefab = unityEntityPrefab;
-    }
-
-    #endregion
-
     #region Protected
 
     protected override Variable Evaluate( ParsingScript script )
     {
-        GameApiProxyObject myObject = new GameApiProxyObject();
+        CscsGameApiObject myObject = new CscsGameApiObject();
         Variable newValue = new Variable( myObject );
         return newValue;
     }

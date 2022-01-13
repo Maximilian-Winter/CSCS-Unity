@@ -4,12 +4,13 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 namespace CSCS
 {
     public class CscsScriptingController : MonoBehaviour
     {
-        public GameObject UnityEntityPrefab;
+        public GameObject UnityCscsObjectPrefab;
         static ConcurrentQueue<ScriptCommand> m_scriptQueue =new ConcurrentQueue <ScriptCommand>();
         static AutoResetEvent m_ScriptLoopEvent = new AutoResetEvent (false);
         static AutoResetEvent m_ScriptQuitEvent = new AutoResetEvent (false);
@@ -18,21 +19,21 @@ namespace CSCS
         void Awake()
         {
             SplitAndMerge.Interpreter.Instance.Init();
-            //SplitAndMerge.DebuggerServer.StartServer(13337);
+            SplitAndMerge.DebuggerServer.StartServer(13337);
             OnStartup();
         }
 
         public void OnDestroy()
         {
-            //SplitAndMerge.DebuggerServer.StopServer();
+            SplitAndMerge.DebuggerServer.StopServer();
             OnShutdown();
         }
 
         public void OnStartup()
         {
-            CscsFunctions.DefineScriptFunctions(UnityEntityPrefab);
+            CscsFunctions.DefineScriptFunctions(UnityCscsObjectPrefab);
             Task.Run(RunScriptingEngineThread);
-            ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
+            //ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
         }
         public void OnShutdown()
         {

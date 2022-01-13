@@ -8,7 +8,6 @@ namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
 {
     public class WelcomeMessage: Message
     {
-        
         private static readonly List<string> s_properties = new()
         {
             "WelcomeMessage"
@@ -58,7 +57,7 @@ namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
         }
     }
     
-    public abstract class Message : IMessage, ScriptObject
+    public abstract class Message : IMessage
     {
         public abstract Type MessageType { get; }
         public abstract Task<Variable> SetProperty(string name, Variable value);

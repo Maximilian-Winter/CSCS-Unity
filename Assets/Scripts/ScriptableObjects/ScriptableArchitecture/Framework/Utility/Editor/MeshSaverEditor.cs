@@ -1,10 +1,35 @@
 using UnityEditor;
 using UnityEngine;
-using System.Collections;
-using System.Collections.Generic;
+
+namespace ScriptableObjects.ScriptableArchitecture.Framework.Utility.Editor
+{
 
 public static class MeshSaverEditor
 {
+    #region Public
+
+    public static void SaveMesh( Mesh mesh, string name, bool makeNewInstance, bool optimizeMesh )
+    {
+        string path = EditorUtility.SaveFilePanel( "Save Separate Mesh Asset", "Assets/", name, "asset" );
+
+        if ( string.IsNullOrEmpty( path ) )
+        {
+            return;
+        }
+
+        path = FileUtil.GetProjectRelativePath( path );
+
+        Mesh meshToSave = makeNewInstance ? Object.Instantiate( mesh ) as Mesh : mesh;
+
+        if ( optimizeMesh )
+        {
+            MeshUtility.Optimize( meshToSave );
+        }
+
+        AssetDatabase.CreateAsset( meshToSave, path );
+        AssetDatabase.SaveAssets();
+    }
+
     [MenuItem( "CONTEXT/MeshFilter/Save Mesh..." )]
     public static void SaveMeshInPlace( MenuCommand menuCommand )
     {
@@ -21,21 +46,7 @@ public static class MeshSaverEditor
         SaveMesh( m, m.name, true, true );
     }
 
-    public static void SaveMesh( Mesh mesh, string name, bool makeNewInstance, bool optimizeMesh )
-    {
-        string path = EditorUtility.SaveFilePanel( "Save Separate Mesh Asset", "Assets/", name, "asset" );
+    #endregion
+}
 
-        if ( string.IsNullOrEmpty( path ) )
-            return;
-
-        path = FileUtil.GetProjectRelativePath( path );
-
-        Mesh meshToSave = ( makeNewInstance ) ? Object.Instantiate( mesh ) as Mesh : mesh;
-
-        if ( optimizeMesh )
-            MeshUtility.Optimize( meshToSave );
-
-        AssetDatabase.CreateAsset( meshToSave, path );
-        AssetDatabase.SaveAssets();
-    }
 }

@@ -10,16 +10,14 @@ using UnityEngine;
 
 namespace CSCS
 {
-    public class GameApiProxyObject : Variable, ScriptObject
+    public class CscsGameApiObject : ScriptObject
     {
         private static readonly List<string> s_properties = new()
         {
-           "GetMessageBusProxy", "GetGameObjectProxy"
+           "GetMessageBusObject", "GetGameObjectApiObject", "GetUnityMathApiObject"
         };
 
-        private CscsUnityEntity m_UnityEntity = null;
-
-        private MessageBusProxyObject m_MessageBusProxyObject = new MessageBusProxyObject();
+        private CscsMessageBusObject m_CscsMessageBusObject = new CscsMessageBusObject();
        
         public List<string> GetProperties()
         {
@@ -36,12 +34,12 @@ namespace CSCS
             {
                 switch (sPropertyName)
                 {
-                    case "GetMessageBusProxy":
-                        newValue = new Variable(new MessageBusProxyObject());
+                    case "GetMessageBusObject":
+                        newValue = new UnityEventVariable(new CscsMessageBusObject());
                         break;
-                    case "GetGameObjectProxy":
+                    case "GetGameObjectApiObject":
                         
-                        newValue = new Variable(new MessageBusProxyObject());
+                        newValue = new Variable(new CscsMessageBusObject());
                         break;
                     default:
                         newValue = Variable.EmptyInstance;

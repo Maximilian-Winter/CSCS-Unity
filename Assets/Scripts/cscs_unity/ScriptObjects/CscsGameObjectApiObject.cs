@@ -2,21 +2,19 @@
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
-using CSCS.Unity;
 using SplitAndMerge;
 using UnityEngine;
 
 namespace CSCS
 {
-    public class GameObjectProxyObject
+    public class CscsGameObjectApiObject
     {
         private static readonly List<string> s_properties = new()
         {
-           "Position", "Rotation", "Scale", "Translate", "RotateAround", "Archetype"
+           "CreateNewGameObject", "CopyGameObject", "Scale", "Translate", "RotateAround"
         };
 
         private CscsUnityEntity m_UnityEntity = null;
-        private GameObjectProxyType m_ObjectArchetype = GameObjectProxyType.New;
         public static Variable GetVariableFromVector3(Vector3 aVector)
         {
             Variable newValue = new Variable (Variable.VarType.ARRAY_NUM);
@@ -82,16 +80,16 @@ namespace CSCS
             }
         }
 
-        public GameObjectProxyObject(GameObject unityEntityPrefab)
+        public CscsGameObjectApiObject(GameObject unityEntityPrefab)
         {
-            var mre = new ManualResetEvent(false);
+           /* var mre = new ManualResetEvent(false);
             CscsScriptingController.ExecuteInUpdate(() =>
             {
                 m_UnityEntity = GameObject.Instantiate(unityEntityPrefab).GetComponent<CscsUnityEntity>();
                 mre.Set();
             });
 
-            mre.WaitOne();
+            mre.WaitOne();*/
         }
 
         public List<string> GetProperties()
@@ -117,9 +115,6 @@ namespace CSCS
                         break;
                     case "Scale":
                         newValue = new Variable(GetScaleProperty());
-                        break;
-                    case "Archetype":
-                        newValue = new Variable(GetNameOfGameObjectProxyType());
                         break;
 
                     default:
@@ -160,10 +155,6 @@ namespace CSCS
                     case "RotateAround":
                         newValue = RotateAround(argValue);
                         break;
-                    case "Archetype":
-                        m_ObjectArchetype = GetGameObjectProxyTypeFromString(argValue.AsString());
-                        break;
-                    
                     default:
                         Debug.Log("CallSetDefault: " + sPropertyName);
                         break;
@@ -224,40 +215,6 @@ namespace CSCS
             var aVector3 = GetVector3FromVariable(vectorVariable);
             m_UnityEntity.transform.RotateAround(aVector3,vectorVariable.GetValue(3).AsFloat());
             return Variable.EmptyInstance;
-        }
-
-        private string GetNameOfGameObjectProxyType()
-        {
-            switch (m_ObjectArchetype)
-            {
-                case GameObjectProxyType.New:
-                    return "New";
-                case GameObjectProxyType.Existing:
-                    return "Existing";
-                case GameObjectProxyType.Copy:
-                    return "Copy";
-                case GameObjectProxyType.DeepCopy:
-                    return "DeepCopy";
-                default:
-                    return "New";
-            }
-        }
-        
-        private GameObjectProxyType GetGameObjectProxyTypeFromString(string archetype)
-        {
-            switch (archetype)
-            {
-                case "New":
-                    return GameObjectProxyType.New;
-                case "Existing":
-                    return GameObjectProxyType.Existing;
-                case "Copy":
-                    return GameObjectProxyType.Copy;
-                case "DeepCopy":
-                    return GameObjectProxyType.DeepCopy;
-                default:
-                    return GameObjectProxyType.New;
-            }
         }
     }
 }

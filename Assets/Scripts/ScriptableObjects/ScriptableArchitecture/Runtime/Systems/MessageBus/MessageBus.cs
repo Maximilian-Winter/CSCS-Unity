@@ -7,33 +7,38 @@ using UnityEngine;
 namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
 {
 
+
+
 [CreateAssetMenu( menuName = "ScriptableSystems/MessageBus", fileName = "MessageBus", order = 0 )]
 public class MessageBus : ScriptableSystem <MessageBus>
 {
-    public class RecipientsToMessageQueuesDictionary : Dictionary<IMessageBusRecipient, Dictionary<string, MessageQueue>> {}
+    public int MaxMessageQueueLength = 500;
+    
+    
+    
+    [Serializable]
+    public class RecipientsToMessageTypeQueuesDictionary : Dictionary<IMessageBusRecipient, Dictionary<Type, CscsMessageQueueObject>> {}
    
     [Serializable]
     public class TypesToRecipientsDictionary : Dictionary<Type, List<IMessageBusRecipient>> {}
 
-    public RecipientsToMessageQueuesDictionary RecipientsToMessages = 
-        new RecipientsToMessageQueuesDictionary();
+    public RecipientsToMessageTypeQueuesDictionary RecipientsToMessages = 
+        new RecipientsToMessageTypeQueuesDictionary();
    
     public TypesToRecipientsDictionary TypesToRecipients = 
         new TypesToRecipientsDictionary();
         
     private void Awake()
     {
-            
-            
         if ( Application.isEditor )
         {
-            RecipientsToMessages = new RecipientsToMessageQueuesDictionary();
+            RecipientsToMessages = new RecipientsToMessageTypeQueuesDictionary();
             TypesToRecipients = 
                 new TypesToRecipientsDictionary();
         }
     }
 
-    public static void SubscribeToAllMessagesOfType<T> (IMessageBusRecipient recipient) where T : Message
+    public static void SubscribeToAllMessagesOfType<T> (IMessageBusRecipient recipient) where T : IMessage
     {
         Type type = typeof( T );
         SubscribeToAllMessagesOfType( recipient, type );
@@ -47,12 +52,12 @@ public class MessageBus : ScriptableSystem <MessageBus>
 
             if (  Instance.RecipientsToMessages.ContainsKey( recipient ) )
             {
-                Instance.RecipientsToMessages[recipient].Add( type.Name,  new MessageQueue() );
+                Instance.RecipientsToMessages[recipient].Add( type,  new CscsMessageQueueObject() );
             }
             else
             {
-                Instance.RecipientsToMessages.Add( recipient, new Dictionary < string, MessageQueue >() );
-                Instance.RecipientsToMessages[recipient].Add( type.Name,  new MessageQueue() );
+                Instance.RecipientsToMessages.Add( recipient, new Dictionary < Type, CscsMessageQueueObject >() );
+                Instance.RecipientsToMessages[recipient].Add( type,  new CscsMessageQueueObject() );
             }
         }
         else
@@ -60,19 +65,28 @@ public class MessageBus : ScriptableSystem <MessageBus>
             Instance.TypesToRecipients.Add( type, new List <IMessageBusRecipient>() );  
             Instance.TypesToRecipients[type].Add( recipient);
                 
-            Instance.RecipientsToMessages.Add( recipient, new Dictionary < string, MessageQueue >() );
-            Instance.RecipientsToMessages[recipient].Add( type.Name,  new MessageQueue() );
+            Instance.RecipientsToMessages.Add( recipient, new Dictionary < Type, CscsMessageQueueObject >() );
+            Instance.RecipientsToMessages[recipient].Add( type,  new CscsMessageQueueObject() );
         }
     }
 
-    public static void PublishMessage(Message message, IMessageBusSender sender)
+    public static void PublishMessage(IMessage message, IMessageBusSender sender)
     {
         Type type = message.MessageType;
         if ( Instance.TypesToRecipients.ContainsKey( type ) )
         {
             foreach ( IMessageBusRecipient recipient in Instance.TypesToRecipients[type] )
             {
-                Instance.RecipientsToMessages[recipient][type.Name].Enqueue(message);
+                if ( Instance.RecipientsToMessages[recipient][type].Count < Instance.MaxMessageQueueLength )
+                {
+                    Instance.RecipientsToMessages[recipient][type].Enqueue(message);
+                }
+                else
+                {
+                    Instance.RecipientsToMessages[recipient][type].Clear();
+                    Instance.RecipientsToMessages[recipient][type].Enqueue(message);
+                }
+                
                 recipient.ReceiveMessage( message  );
             }
         }

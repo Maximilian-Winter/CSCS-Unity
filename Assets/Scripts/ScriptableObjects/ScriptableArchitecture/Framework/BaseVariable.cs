@@ -1,8 +1,8 @@
-﻿using System;
-using ScriptableObjects.ScriptableArchitecture.Framework;
-using UnityEngine;
+﻿namespace ScriptableObjects.ScriptableArchitecture.Framework
+{
 
 public abstract class BaseVariable : ScriptableBase
 {
-	
+}
+
 }

@@ -1,66 +1,66 @@
 ﻿using System;
-using System.Collections.Generic;
 using OdinSerializer;
-using ScriptableObjects.ScriptableArchitecture.Framework;
 using UnityEngine;
 
-
-public abstract class Variable<T> : BaseVariable
+namespace ScriptableObjects.ScriptableArchitecture.Framework
 {
-	[Serializable]
-	private class ScriptableData<TV> : ScriptableData
-	{
-		public bool IsInitialized = false;
-		public TV DefaultValue;
-		public TV RuntimeValue;
-	}
 
-	public T DefaultValue;
-	
-	[OdinSerialize]
-	protected T m_RuntimeValue;
+public abstract class Variable < T > : BaseVariable
+{
+    public T DefaultValue;
 
-	public VariableEvent<T> ChangedValueVariableEvent;
-	
-	public bool IsInitialized = false;
+    public VariableEvent < T > ChangedValueVariableEvent;
 
-	public abstract T RuntimeValue();
+    public bool IsInitialized = false;
 
-	public void SetRuntimeValue( T val )
-	{
-		m_RuntimeValue = val;
-	}
+    [OdinSerialize]
+    protected T m_RuntimeValue;
 
-	protected void OnEnable()
-	{
-		if ( Application.isPlaying )
-		{
-			if ( !IsInitialized )
-			{
-				m_RuntimeValue = DefaultValue;
-				IsInitialized = true;
-			}
-		}
-		else
-		{
-			IsInitialized = false;
-		}
-	}
+    protected void OnEnable()
+    {
+        if ( Application.isPlaying )
+        {
+            if ( !IsInitialized )
+            {
+                m_RuntimeValue = DefaultValue;
+                IsInitialized = true;
+            }
+        }
+        else
+        {
+            IsInitialized = false;
+        }
+    }
 
-	public override ScriptableData GetScriptableData()
-	{
-		return new ScriptableData<T>
-		{
-			IsInitialized = IsInitialized,
-			DefaultValue = DefaultValue,
-			RuntimeValue = RuntimeValue()
-		};
-	}
+    public abstract T RuntimeValue();
 
-	public override void LoadScriptableData(ScriptableData data)
-	{
-		IsInitialized =  ((ScriptableData<T>) data).IsInitialized;
-		DefaultValue =  ((ScriptableData<T>) data).DefaultValue;
-		m_RuntimeValue =  ((ScriptableData<T>) data).RuntimeValue;
-	}
+    public void SetRuntimeValue( T val )
+    {
+        m_RuntimeValue = val;
+    }
+
+    public override ScriptableData GetScriptableData()
+    {
+        return new ScriptableData < T >
+        {
+            IsInitialized = IsInitialized, DefaultValue = DefaultValue, RuntimeValue = RuntimeValue()
+        };
+    }
+
+    public override void LoadScriptableData( ScriptableData data )
+    {
+        IsInitialized = ( ( ScriptableData < T > ) data ).IsInitialized;
+        DefaultValue = ( ( ScriptableData < T > ) data ).DefaultValue;
+        m_RuntimeValue = ( ( ScriptableData < T > ) data ).RuntimeValue;
+    }
+
+    [Serializable]
+    private class ScriptableData < TV > : ScriptableData
+    {
+        public bool IsInitialized = false;
+        public TV DefaultValue;
+        public TV RuntimeValue;
+    }
+}
+
 }

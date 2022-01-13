@@ -1,19 +1,28 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
 
-public class VariableEventListener<T> : MonoBehaviour
+namespace ScriptableObjects.ScriptableArchitecture.Framework
 {
-    public VariableEvent<T> Event;
-    public UnityEvent<T> Response;
+
+public class VariableEventListener < T > : MonoBehaviour
+{
+    public VariableEvent < T > Event;
+    public UnityEvent < T > Response;
 
     private void OnEnable()
-    { Event.RegisterListener(this); }
+    {
+        Event.RegisterListener( this );
+    }
 
     private void OnDisable()
-    { Event.UnregisterListener(this); }
-
-    public void OnEventRaised(T variable)
     {
-        Response.Invoke(variable);
+        Event.UnregisterListener( this );
     }
+
+    public void OnEventRaised( T variable )
+    {
+        Response.Invoke( variable );
+    }
+}
+
 }

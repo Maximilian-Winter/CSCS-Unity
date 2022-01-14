@@ -9,9 +9,10 @@ namespace CSCS
 {
     public class CscsGameObject: ScriptObject
     {
+        private GameObject UnityCscsObjectPrefab;
         private static readonly List<string> s_properties = new()
         {
-           "Position", "Rotation", "Scale", "Translate", "RotateAround"
+           "Position", "Rotation", "Scale", "Translate", "RotateAround", "GetUnityEntity"
         };
 
         private CscsUnityEntity m_UnityEntity = null;
@@ -79,17 +80,21 @@ namespace CSCS
                 return newValue;
             }
         }
+        
+        public CscsGameObject()
+        {
+        }
 
         public CscsGameObject(GameObject unityEntityPrefab)
         {
-           /* var mre = new ManualResetEvent(false);
+            var mre = new ManualResetEvent(false);
             CscsScriptingController.ExecuteInUpdate(() =>
             {
                 m_UnityEntity = GameObject.Instantiate(unityEntityPrefab).GetComponent<CscsUnityEntity>();
                 mre.Set();
             });
 
-            mre.WaitOne();*/
+            mre.WaitOne();
         }
 
         public List<string> GetProperties()

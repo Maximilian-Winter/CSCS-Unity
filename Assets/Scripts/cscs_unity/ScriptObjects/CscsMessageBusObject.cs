@@ -5,6 +5,7 @@ using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using CSCS;
+using OdinSerializer.Utilities;
 using ScriptableObjects.ScriptableArchitecture.Systems.MessageBus;
 using SplitAndMerge;
 using UnityEngine;
@@ -19,21 +20,18 @@ public class CscsMessageBusObject : ScriptObject
     
     public CscsMessageBusObject()
     {
-        if ( MessageTypesToString == null )
+        if ( MessageTypesToString == null)
         {
             MessageTypesToString = new TypeToString();
-            IEnumerable < Type > MessageTypes = Assembly
-                                               .GetAssembly(typeof(IMessage))
-                                               .GetTypes()
-                                               .Where(t => t.IsSubclassOf(typeof(IMessage)));
             
-            foreach ( Type messageType in MessageTypes )
+            foreach (Type mytype in System.Reflection.Assembly.GetExecutingAssembly().GetTypes()
+                                          .Where(mytype => mytype .GetInterfaces().Contains(typeof(IMessage)))) 
             {
-                MessageTypesToString.Add( messageType.Name, messageType );
+                MessageTypesToString.Add( mytype.Name, mytype );
             }
         }
     }
-    private static TypeToString MessageTypesToString = null; 
+    private static TypeToString MessageTypesToString; 
     private static readonly List<string> s_properties = new()
     {
         "GetMessageQueue", "PublishMessage", "SubscribeToMessageType"
@@ -51,13 +49,13 @@ public class CscsMessageBusObject : ScriptObject
                 case "GetMessageQueue":
                     if (args != null && args.Count > 1 )
                     {
-                        UnityEventVariable eventRecipient = ( UnityEventVariable ) args[0];
+                        Variable eventRecipient = args[0];
                         if(MessageBus.Instance.RecipientsToMessages.ContainsKey( eventRecipient ))
                         {
-                            
                             if ( MessageTypesToString.ContainsKey( args[1].AsString() ) )
                             {
                                 newValue = new Variable(MessageBus.Instance.RecipientsToMessages[eventRecipient][MessageTypesToString[ args[1].AsString()]]);
+                                Debug.Log( "Peek : " + (MessageBus.Instance.RecipientsToMessages[eventRecipient][MessageTypesToString[ args[1].AsString()]].Peek() as WelcomeMessage).GetProperty( "WelcomeMessage" ).Result.AsString() );
                             }
                             else
                             {
@@ -70,6 +68,22 @@ public class CscsMessageBusObject : ScriptObject
                         }
                     }
                     break;
+                case "PublishMessage":
+                    if (args != null && args.Count > 1 )
+                    {
+                        if ( MessageTypesToString.ContainsKey( args[1].AsString() ) )
+                        {
+                            string varName = args[0].AsString();
+                            Type messageType = MessageTypesToString[args[1].AsString()];
+
+                            IMessage instantiatedObject = Activator.CreateInstance(messageType) as IMessage;
+                            Variable messageVariable = Utils.GetVariable(varName, script);
+                            instantiatedObject  = instantiatedObject.ConstructFromCscsVariable( messageVariable, messageVariable );
+                            MessageBus.PublishMessage( instantiatedObject, messageVariable );
+                        }
+                            
+                    }
+                    break;
                 case "SubscribeToMessageType":
                     if (args != null && args.Count > 1 )
                     {
@@ -79,7 +93,7 @@ public class CscsMessageBusObject : ScriptObject
                             string varName = args[0].AsString();
                             Type messageType = MessageTypesToString[args[1].AsString()];
                             
-                            UnityEventVariable eventVariable = (UnityEventVariable)Utils.GetVariable(varName, script);
+                            Variable eventVariable = Utils.GetVariable(varName, script);
                             eventVariable.MessageTypesToCallbackClassInstancesFunctions.Add(messageType, new List<string>());
                             eventVariable.MessageTypesToCallbackClassInstancesFunctions[messageType].Add(varName);
                             MessageBus.SubscribeToAllMessagesOfType( eventVariable, messageType );

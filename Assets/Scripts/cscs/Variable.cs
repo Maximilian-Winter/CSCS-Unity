@@ -11,8 +11,10 @@ using UnityEngine;
 
 namespace SplitAndMerge
 {
-    public class Variable
+    public class Variable : IMessageBusRecipient, IMessageBusSender
     { 
+        public Dictionary<Type, List<string>> MessageTypesToCallbackClassInstancesFunctions = new Dictionary<Type, List<string>>();
+        
         public enum VarType
         {
             NONE, UNDEFINED, NUMBER, STRING, ARRAY,
@@ -120,6 +122,8 @@ namespace SplitAndMerge
             Variable newVar = EmptyInstance;
             
             newVar = (Variable)this.MemberwiseClone();
+            
+            newVar.MessageTypesToCallbackClassInstancesFunctions = new Dictionary<Type, List<string>>(MessageTypesToCallbackClassInstancesFunctions) ;
 
             if (m_tuple != null)
             {
@@ -138,6 +142,22 @@ namespace SplitAndMerge
                 newVar.m_enumMap = m_enumMap == null ? null : new Dictionary<int, string>(m_enumMap);
             }
             return newVar;
+        }
+        
+        public void ReceiveMessage<T>(T message) where T : IMessage
+        {
+            string body = "";
+            
+            if (MessageTypesToCallbackClassInstancesFunctions.ContainsKey(message.MessageType))
+            {
+                List<string> callbackFunctions = MessageTypesToCallbackClassInstancesFunctions[message.MessageType];
+                foreach (string callbackInstances in callbackFunctions)
+                {
+                    body += $"{callbackInstances}.ReceiveMessage();\n";
+                }
+                CscsScriptingController.AddScriptToQueue(body);
+            }
+
         }
 
         public static Variable NewEmpty()

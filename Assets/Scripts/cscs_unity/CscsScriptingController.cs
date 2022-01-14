@@ -16,24 +16,24 @@ namespace CSCS
         static AutoResetEvent m_ScriptQuitEvent = new AutoResetEvent (false);
         static ConcurrentQueue<Action> m_actionQueue = new ConcurrentQueue<Action>();
 
-        void Awake()
+        void OnEnable()
         {
             SplitAndMerge.Interpreter.Instance.Init();
-            SplitAndMerge.DebuggerServer.StartServer(13337);
+            //SplitAndMerge.DebuggerServer.StartServer(13337);
             OnStartup();
         }
 
-        public void OnDestroy()
+        public void OnDisable()
         {
-            SplitAndMerge.DebuggerServer.StopServer();
             OnShutdown();
+            //SplitAndMerge.DebuggerServer.StopServer();
         }
 
         public void OnStartup()
         {
             CscsFunctions.DefineScriptFunctions(UnityCscsObjectPrefab);
             Task.Run(RunScriptingEngineThread);
-            //ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
+            ExecuteScript("Assets/Scripts/cscs_scripts/Test.cscs");
         }
         public void OnShutdown()
         {

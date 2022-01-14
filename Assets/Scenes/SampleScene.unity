@@ -155,6 +155,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9dfab167a4126544bb0cd36988a48ea4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ScriptableBaseObjects:
+  - {fileID: 11400000, guid: f7f401b12b260e04192298bafa67c9ca, type: 2}
   VariableManager: {fileID: 11400000, guid: d46f5044e1554d145ad2c83b8646848a, type: 2}
 --- !u!114 &340778096
 MonoBehaviour:
@@ -180,7 +182,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 94723d15fe734b70b87362ad6a22dcb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UnityEntityPrefab: {fileID: 4298520155942795921, guid: 2a49dbfca435c2f48b2aed6c9b7bdea8, type: 3}
+  UnityCscsObjectPrefab: {fileID: 4298520155942795921, guid: 2a49dbfca435c2f48b2aed6c9b7bdea8, type: 3}
 --- !u!4 &340778098
 Transform:
   m_ObjectHideFlags: 0
@@ -208,6 +210,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e28548f6f8249f28c789702f63f8d90, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  WelcomeMessage: ASdcx
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

@@ -2078,7 +2078,7 @@ namespace SplitAndMerge
             if (script.ClassInstance != null)
             {
                 //varName = script.ClassInstance.InstanceName + "." + m_name;
-                varValue = script.ClassInstance.SetProperty(m_name, varValue).Result;
+                script.ClassInstance.SetProperty(m_name, varValue);
                 return varValue.DeepClone();
             }
 

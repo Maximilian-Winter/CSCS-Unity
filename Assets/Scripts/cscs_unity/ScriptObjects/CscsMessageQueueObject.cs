@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using CSCS;
 using ScriptableObjects.ScriptableArchitecture.Systems.MessageBus;
 using SplitAndMerge;
+using UnityEngine;
 
 namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
 {
@@ -12,7 +13,7 @@ public class CscsMessageQueueObject : Queue<IMessage>, ScriptObject
 {
     private static readonly List<string> s_properties = new()
     {
-        "DequeueMessage"
+        "DequeueMessage", "QueueLength"
     };
 
     public Task<Variable> SetProperty(string name, Variable value)
@@ -29,25 +30,21 @@ public class CscsMessageQueueObject : Queue<IMessage>, ScriptObject
     public Task<Variable> GetProperty(string name, List<Variable> args = null, ParsingScript script = null)
     {
         var newValue = Variable.EmptyInstance;
-        var mre = new ManualResetEvent(false);
-        CscsScriptingController.ExecuteInUpdate(() =>
-        {
-            switch (name)
-            { 
-                case "DequeueMessage":
-                    if ( script != null )
-                    {
-                        newValue = new Variable(Dequeue());
-                    }
-                    break;
-                default:
-                    break;
-            }
-
-            mre.Set();
-        });
-
-        mre.WaitOne();
+        switch (name)
+        { 
+            case "DequeueMessage":
+                IMessage message = Dequeue();
+                newValue = new Variable(message);
+                break;
+            case "QueueLength":
+                if ( script != null )
+                {
+                    newValue = new Variable(Count);
+                }
+                break;
+            default:
+                break;
+        }
               
         return Task.FromResult(newValue);
     }

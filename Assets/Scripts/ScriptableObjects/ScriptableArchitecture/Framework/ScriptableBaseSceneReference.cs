@@ -1,13 +1,15 @@
-﻿using System.IO;
+﻿using System.Collections.Generic;
+using System.IO;
 using OdinSerializer;
 using UnityEngine;
 
 namespace ScriptableObjects.ScriptableArchitecture.Framework
 {
 
-public class VariablePersistence : MonoBehaviour
+public class ScriptableBaseSceneReference : MonoBehaviour
 {
     private const string SavePath = "Temp/save.savefile";
+    public List<ScriptableBase> ScriptableBaseObjects;
     public VariableManager VariableManager;
 
     private void Start()
@@ -20,6 +22,7 @@ public class VariablePersistence : MonoBehaviour
         }
 #if UNITY_EDITOR
         VariableManager.RefreshList();
+        ScriptableBaseObjects = new List < ScriptableBase >( VariableManager.Variables );
 #endif
     }
 

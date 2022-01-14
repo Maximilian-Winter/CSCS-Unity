@@ -1,70 +1,99 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
+using CSCS;
 using ScriptableObjects.ScriptableArchitecture.Systems.MessageBus;
 using SplitAndMerge;
+using UnityEngine;
 
 namespace ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus
 {
-    public class WelcomeMessage: Message
+    public class WelcomeMessage: IMessage
     {
-        private static readonly List<string> s_properties = new()
+        public WelcomeMessage()
         {
-            "WelcomeMessage"
-        };
-
-        private string m_WelcomeMessage = "Hi from C# To CSCS!";
+            WelcomeMessageContent = "";
+            MessageBusSender = null;
+        }
+        public WelcomeMessage(IMessageBusSender messageBusSender)
+        {
+            WelcomeMessageContent = "HelloWorld";
+            MessageBusSender = messageBusSender;
+        }
         
-        public override Type MessageType
+        public WelcomeMessage(IMessageBusSender messageBusSender, string welcomeMessage )
+        {
+            WelcomeMessageContent = welcomeMessage;
+            MessageBusSender = messageBusSender;
+        }
+
+        public IMessage ConstructFromCscsVariable(IMessageBusSender messageBusSender, Variable variable)
+        {
+            WelcomeMessage message = new WelcomeMessage(messageBusSender, variable.GetProperty( "WelcomeMessage" ).AsString() );
+            return message;
+        }
+
+        public Type MessageType
         {
             get => typeof(WelcomeMessage);
         }
 
-        public override Task<Variable> GetProperty(string sPropertyName,
-            List<Variable> args = null, ParsingScript script = null)
+        public IMessageBusSender MessageBusSender { get; set; }
+
+        public string WelcomeMessageContent
+        {
+            get => m_WelcomeMessageContent;
+            set => m_WelcomeMessageContent = value;
+        }
+
+        private static readonly List<string> s_properties = new()
+        {
+            "WelcomeMessage", "MessageSender"
+        };
+
+        private string m_WelcomeMessageContent = "Hi from C# To CSCS!";
+
+        public Task<Variable> SetProperty(string name, Variable value)
         {
             var newValue = Variable.EmptyInstance;
+            var mre = new ManualResetEvent(false);
 
-            switch (sPropertyName)
+            CscsScriptingController.ExecuteInUpdate(() =>
+            {
+                switch (name)
+                {
+                    default:
+                        break;
+                }
+
+                mre.Set();
+            });
+
+            mre.WaitOne();
+            return Task.FromResult(newValue);
+        }
+
+        public Task<Variable> GetProperty(string name, List<Variable> args = null, ParsingScript script = null)
+        {
+            var newValue = Variable.EmptyInstance;
+            switch (name)
             {
                 case "WelcomeMessage":
-                    newValue = new Variable(m_WelcomeMessage);
+                    newValue = new Variable( WelcomeMessageContent );
+                    break;
+                case "MessageSender":
+                    newValue = new Variable( MessageBusSender );
                     break;
                 default:
-                    newValue = Variable.EmptyInstance;
                     break;
             }
-      
             return Task.FromResult(newValue);
         }
 
-        public override Task<Variable> SetProperty(string sPropertyName, Variable argValue)
-        {
-            var newValue = Variable.EmptyInstance;
-            /*
-             switch (sPropertyName)
-             {
-                default:
-                   break;
-             }
-       */
-            return Task.FromResult(newValue);
-        }
-
-        public override List<string> GetProperties()
+        public List<string> GetProperties()
         {
             return s_properties;
         }
-    }
-    
-    public abstract class Message : IMessage
-    {
-        public abstract Type MessageType { get; }
-        public abstract Task<Variable> SetProperty(string name, Variable value);
-
-        public abstract Task<Variable> GetProperty(string name, List<Variable> args = null,
-            ParsingScript script = null);
-
-        public abstract List<string> GetProperties();
     }
 }

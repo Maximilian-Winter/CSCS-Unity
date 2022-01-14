@@ -16,7 +16,7 @@ public class CscsFunctions
     {
         ParserFunction.RegisterFunction(
             "CreateGameApiObject",
-            new CreateGameApiObjectFunction() );
+            new CreateGameApiObjectFunction(UnityCscsObjectPrefab) );
 
         ParserFunction.RegisterFunction( "DebugLog", new DebugLogFunction() );
         ParserFunction.RegisterFunction( "InvokeNative", new InvokeNativeFunction() );
@@ -77,11 +77,17 @@ public class ThisFunction : ActionFunction
 
 public class CreateGameApiObjectFunction : ParserFunction
 {
+    private GameObject UnityCscsObjectPrefab;
     #region Protected
+
+    public CreateGameApiObjectFunction( GameObject unityCscsObjectPrefab )
+    {
+        UnityCscsObjectPrefab = unityCscsObjectPrefab;
+    }
 
     protected override Variable Evaluate( ParsingScript script )
     {
-        CscsGameApiObject myObject = new CscsGameApiObject();
+        CscsGameApiObject myObject = new CscsGameApiObject(UnityCscsObjectPrefab);
         Variable newValue = new Variable( myObject );
         return newValue;
     }

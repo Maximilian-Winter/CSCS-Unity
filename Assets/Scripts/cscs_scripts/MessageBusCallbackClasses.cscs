@@ -6,11 +6,15 @@ class MyWelcomeMessageCallback
         MessageBusProxy = messageBus;
     }
 
+    function GetWelcomeMessage()
+    {
+        return MessageBusProxy.GetMessageQueue(this, "WelcomeMessage").DequeueMessage();
+    }
+
     function ReceiveMessage()
     {
-        messageQueue = MessageBusProxy.GetMessageQueue(this, "WelcomeMessage");
-        welcomeMessage = messageQueue.DequeueMessage();
-        
-        DebugLog("Callback from Message Bus: " + welcomeMessage.WelcomeMessage);
+        Message = MessageBusProxy.GetMessageQueue(this, "WelcomeMessage").DequeueMessage();
+        DebugLog("Callback from Message Bus: " + Message.WelcomeMessage); 
+        Message = null;
     }
 }

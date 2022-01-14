@@ -80,6 +80,7 @@ public class MessageBus : ScriptableSystem <MessageBus>
                 if ( Instance.RecipientsToMessages[recipient][type].Count < Instance.MaxMessageQueueLength )
                 {
                     Instance.RecipientsToMessages[recipient][type].Enqueue(message);
+                    Debug.Log("MessageBus: " + (message as WelcomeMessage).WelcomeMessageContent);
                 }
                 else
                 {
@@ -90,6 +91,7 @@ public class MessageBus : ScriptableSystem <MessageBus>
                 recipient.ReceiveMessage( message  );
             }
         }
+
     }
    
     public static void UnsubcribeFromMessages<T>(IMessageBusRecipient recipient)

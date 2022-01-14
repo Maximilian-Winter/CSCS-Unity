@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using CSCS.Unity;
 using ScriptableObjects.ScriptableArchitecture.Runtime.Systems.MessageBus;
 using SplitAndMerge;
 using UnityEngine;
@@ -17,8 +16,16 @@ namespace CSCS
            "GetMessageBusObject", "GetGameObjectApiObject", "GetUnityMathApiObject"
         };
 
-        private CscsMessageBusObject m_CscsMessageBusObject = new CscsMessageBusObject();
-       
+        
+        private CscsMessageBusObject m_CscsMessageBusObject = null;
+        private CscsGameObjectApiObject m_CscsGameObjectApiObject = null;
+
+        public CscsGameApiObject( GameObject unityCscsObjectPrefab )
+        {
+            m_CscsMessageBusObject = new CscsMessageBusObject();
+            m_CscsGameObjectApiObject = new CscsGameObjectApiObject( unityCscsObjectPrefab );
+        }
+
         public List<string> GetProperties()
         {
             return s_properties;
@@ -35,11 +42,11 @@ namespace CSCS
                 switch (sPropertyName)
                 {
                     case "GetMessageBusObject":
-                        newValue = new UnityEventVariable(new CscsMessageBusObject());
+                        newValue = new Variable(m_CscsMessageBusObject);
                         break;
                     case "GetGameObjectApiObject":
                         
-                        newValue = new Variable(new CscsMessageBusObject());
+                        newValue = new Variable(m_CscsGameObjectApiObject);
                         break;
                     default:
                         newValue = Variable.EmptyInstance;
